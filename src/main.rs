@@ -3,6 +3,8 @@ use std::{
     io::{stdout, Write},
 };
 
+mod vec3;
+
 fn main() -> Result<(), Box<dyn Error>> {
     const IMAGE_WIDTH: i32 = 256;
     const IMAGE_HEIGHT: i32 = 256;
@@ -17,11 +19,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             let g = j as f64 / (IMAGE_HEIGHT - 1) as f64;
             let b = 0.25f64;
 
-            let ir = (255.99 * r) as i32;
-            let ig = (255.99 * g) as i32;
-            let ib = (255.99 * b) as i32;
+            let color = vec3::Color::new(r, g, b);
 
-            println!("{} {} {}", ir, ig, ib);
+            color.write_color();
         }
     }
 
