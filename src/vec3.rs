@@ -12,19 +12,23 @@ impl Vec3 {
         Vec3 { x, y, z }
     }
 
-    fn add(&mut self, other: &Vec3) {
-        self.x += other.x;
-        self.y += other.y;
-        self.z += other.z;
+    pub fn add(&self, other: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
     }
 
-    fn scalar_mul(&mut self, s: f64) {
-        self.x *= s;
-        self.y *= s;
-        self.z *= s;
+    pub fn scalar_mul(&self, s: f64) -> Vec3 {
+        Vec3 {
+            x: self.x * s,
+            y: self.y * s,
+            z: self.z * s,
+        }
     }
 
-    fn negate(&self) -> Vec3 {
+    pub fn negate(&self) -> Vec3 {
         Vec3 {
             x: -self.x,
             y: -self.y,
@@ -32,11 +36,11 @@ impl Vec3 {
         }
     }
 
-    fn length(&self) -> f64 {
+    pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
-    fn length_squared(&self) -> f64 {
+    pub fn length_squared(&self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 

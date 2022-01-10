@@ -3,6 +3,7 @@ use std::{
     io::{stdout, Write},
 };
 
+mod ray;
 mod vec3;
 
 fn main() -> Result<(), Box<dyn Error>> {
