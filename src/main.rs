@@ -11,18 +11,23 @@ use crate::vec3::VecOps;
 mod ray;
 mod vec3;
 
-fn hit_sphere(centre: Point3, radius: f64, ray: &Ray) -> bool {
+fn hit_sphere(centre: Point3, radius: f64, ray: &Ray) -> Option<f64> {
     let oc = ray.origin - centre;
     let a = ray.direction.dot(ray.direction);
     let b = 2.0 * oc.dot(ray.direction);
     let c = oc.dot(oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
-    discriminant > 0.0 // 2 roots
+    if discriminant < 0.0 {
+        None
+    } else {
+        Some((-b - discriminant.sqrt()) / (2.0 * a))
+    }
 }
 
 fn ray_color(ray: &Ray) -> Color {
-    if hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        return Color::new(1.0, 1.0, 0.0);
+    if let Some(t) = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
+        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
+        return 0.5 * Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.0);
     }
 
     let unit_direction = ray.direction.normalize();
