@@ -8,21 +8,11 @@ use vec3::{Color, Point3, Vec3};
 
 use crate::vec3::VecOps;
 
+mod hittable;
 mod ray;
 mod vec3;
 
-fn hit_sphere(centre: Point3, radius: f64, ray: &Ray) -> Option<f64> {
-    let oc = ray.origin - centre;
-    let a = ray.direction.dot(ray.direction);
-    let half_b = oc.dot(ray.direction);
-    let c = oc.dot(oc) - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        None
-    } else {
-        Some((-half_b - discriminant.sqrt()) / a)
-    }
-}
+fn hit_sphere(centre: Point3, radius: f64, ray: &Ray) -> Option<f64> {}
 
 fn ray_color(ray: &Ray) -> Color {
     if let Some(t) = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
