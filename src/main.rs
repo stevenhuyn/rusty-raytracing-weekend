@@ -3,19 +3,23 @@ use std::{
     io::{stdout, Write},
 };
 
+use hittable::{HitRecord, Hittable};
 use ray::Ray;
 use vec3::{Color, Point3, Vec3};
 
-use crate::vec3::VecOps;
+use crate::{
+    hittable::{hittable_list::HittableList, sphere::Sphere},
+    vec3::VecOps,
+};
 
 mod hittable;
 mod ray;
 mod vec3;
 
-fn ray_color(ray: &Ray) -> Color {
-    if let Some(t) = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
-        return 0.5 * Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.0);
+fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
+    let mut hit_record = HitRecord::new(); // TODO: Option?
+    if world.hit(ray, 0.0, f64::INFINITY, &mut hit_record) {
+        return 0.5 * (hit_record.normal + Color::new(1.0, 1.0, 1.0));
     }
 
     let unit_direction = ray.direction.normalize();
@@ -29,6 +33,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: i64 = 400;
     let image_height: i64 = (image_width as f64 / aspect_ratio) as i64;
+
+    // World
+    let world: HittableList = vec![
+        Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)),
+        Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)),
+    ];
 
     // Camera
     let viewport_height = 2.0;
@@ -55,7 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 direction: lower_left_corner + u * horizontal + v * vertical - origin,
             };
 
-            let pixel_color = ray_color(&ray);
+            let pixel_color = ray_color(&ray, &world);
 
             pixel_color.write_color();
         }
