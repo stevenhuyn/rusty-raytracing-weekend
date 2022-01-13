@@ -12,8 +12,6 @@ mod hittable;
 mod ray;
 mod vec3;
 
-fn hit_sphere(centre: Point3, radius: f64, ray: &Ray) -> Option<f64> {}
-
 fn ray_color(ray: &Ray) -> Color {
     if let Some(t) = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
         let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();

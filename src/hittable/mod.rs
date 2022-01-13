@@ -14,3 +14,13 @@ pub struct HitRecord {
 trait Hittable {
     fn hit(&self, ray: Ray, t_min: f64, t_max: f64, hit_record: &mut HitRecord) -> bool;
 }
+
+impl HitRecord {
+    fn set_face_normal(&self, ray: Ray, outward_normal: Vec3) {
+        let front_face = ray.direction.dot(outward_normal) > 0.0;
+        self.normal = match front_face {
+            true => outward_normal,
+            false => -outward_normal,
+        }
+    }
+}
