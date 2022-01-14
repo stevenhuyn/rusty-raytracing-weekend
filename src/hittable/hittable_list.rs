@@ -12,7 +12,7 @@ impl Hittable for HittableList {
 
         for object in self {
             // Need to add logic to check which was closest
-            if object.hit(ray, t_min, t_max, &mut temp_record) {
+            if object.hit(ray, t_min, closest_so_far, &mut temp_record) {
                 hit_anything = true;
                 closest_so_far = temp_record.t;
                 *hit_record = temp_record;
