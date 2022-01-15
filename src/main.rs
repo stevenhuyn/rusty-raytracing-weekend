@@ -33,7 +33,11 @@ const MAX_DEPTH: u32 = 50;
 
 fn random_in_unit_sphere() -> Vec3 {
     loop {
-        let p = Vec3::new(random::<f64>(), random::<f64>(), random::<f64>());
+        let p = Vec3::new(
+            random::<f64>() * 2f64 - 1f64,
+            random::<f64>() * 2f64 - 1f64,
+            random::<f64>() * 2f64 - 1f64,
+        );
         if p.length_squared() >= 1f64 {
             continue;
         }
