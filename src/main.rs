@@ -102,9 +102,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     let render: Vec<u8> = draw(WIDTH, HEIGHT);
-    println!("Rendered");
     pixels.get_frame().copy_from_slice(&render[..]);
-    println!("Copied!");
 
     event_loop.run(move |event, _, control_flow| {
         // Draw the current frame
