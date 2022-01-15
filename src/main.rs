@@ -9,7 +9,8 @@ use pixels::{Pixels, SurfaceTexture};
 use rand::random;
 use ray::Ray;
 use std::error::Error;
-use vec3::{Color, Point3};
+use std::time::Instant;
+use vec3::{Color, Point3, Vec3};
 use winit::{
     dpi::LogicalSize,
     event::{Event, VirtualKeyCode},
@@ -23,13 +24,36 @@ mod hittable;
 mod ray;
 mod vec3;
 
-const WIDTH: u32 = 800;
-const HEIGHT: u32 = 450;
+const WIDTH: u32 = 400;
+const HEIGHT: u32 = 225;
+const MAX_DEPTH: u32 = 50;
 
-fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
+fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = Vec3::new(random::<f64>(), random::<f64>(), random::<f64>());
+        if p.length_squared() >= 1f64 {
+            continue;
+        }
+        return p;
+    }
+}
+
+fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
+    if depth == 0 {
+        return Color::new(0.0, 0.0, 0.0);
+    }
+
     let mut hit_record = HitRecord::new(); // TODO: Option?
     if world.hit(ray, 0.0, f64::INFINITY, &mut hit_record) {
-        return 0.5 * (hit_record.normal + Color::new(1.0, 1.0, 1.0));
+        return 0.5
+            * ray_color(
+                &Ray {
+                    origin: hit_record.point,
+                    direction: hit_record.normal + random_in_unit_sphere(),
+                },
+                world,
+                depth - 1,
+            );
     }
 
     let unit_direction = ray.direction.normalize();
@@ -59,7 +83,7 @@ fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
                 let u = (i as f64 + random::<f64>()) / (image_width - 1) as f64;
                 let v = (j as f64 + random::<f64>()) / (image_height - 1) as f64;
                 let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, &world);
+                pixel_color += ray_color(&ray, &world, MAX_DEPTH);
             }
             pixel_color /= samples_per_pixel as f64;
             pixel_color *= 255.999f64;
@@ -93,8 +117,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         Pixels::new(WIDTH, HEIGHT, surface_texture)?
     };
 
+    let mut now = Instant::now();
     let render: Vec<u8> = draw(WIDTH, HEIGHT);
+    println!("Rendered in {}", now.elapsed().as_secs_f64());
+
+    now = Instant::now();
     pixels.get_frame().copy_from_slice(&render[..]);
+    println!("Copied frame buffer in {}", now.elapsed().as_secs_f64());
 
     event_loop.run(move |event, _, control_flow| {
         // Draw the current frame
