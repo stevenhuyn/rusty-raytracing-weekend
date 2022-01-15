@@ -8,8 +8,11 @@ use log::error;
 use pixels::{Pixels, SurfaceTexture};
 use rand::random;
 use ray::Ray;
-use std::error::Error;
-use std::time::Instant;
+use std::{error::Error, ops::AddAssign};
+use std::{
+    ops::{Div, Mul},
+    time::Instant,
+};
 use vec3::{Color, Point3, Vec3};
 use winit::{
     dpi::LogicalSize,
@@ -78,15 +81,16 @@ fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         .rev()
         .cartesian_product(0..image_width)
         .flat_map(|(j, i)| {
-            let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            for _ in 0..samples_per_pixel {
-                let u = (i as f64 + random::<f64>()) / (image_width - 1) as f64;
-                let v = (j as f64 + random::<f64>()) / (image_height - 1) as f64;
-                let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, &world, MAX_DEPTH);
-            }
-            pixel_color /= samples_per_pixel as f64;
-            pixel_color *= 255.999f64;
+            let pixel_color = (0..samples_per_pixel)
+                .map(|_| {
+                    let u = (i as f64 + random::<f64>()) / (image_width - 1) as f64;
+                    let v = (j as f64 + random::<f64>()) / (image_height - 1) as f64;
+                    let ray = camera.get_ray(u, v);
+                    ray_color(&ray, &world, MAX_DEPTH)
+                })
+                .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
+                .div(samples_per_pixel as f64)
+                .mul(255.999f64);
 
             vec![
                 pixel_color.x as u8,
@@ -100,6 +104,11 @@ fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
+
+    let mut now = Instant::now();
+    let render: Vec<u8> = draw(WIDTH, HEIGHT);
+
+    println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     let mut input = WinitInputHelper::new();
     let event_loop = EventLoop::new();
@@ -116,10 +125,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         let surface_texture = SurfaceTexture::new(WIDTH, HEIGHT, &window);
         Pixels::new(WIDTH, HEIGHT, surface_texture)?
     };
-
-    let mut now = Instant::now();
-    let render: Vec<u8> = draw(WIDTH, HEIGHT);
-    println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     now = Instant::now();
     pixels.get_frame().copy_from_slice(&render[..]);
