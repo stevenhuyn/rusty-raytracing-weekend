@@ -1,37 +1,30 @@
-use std::{
-    error::Error,
-    io::{stdout, Write},
+use crate::{
+    camera::Camera,
+    hittable::{hittable_list::HittableList, sphere::Sphere},
 };
-
 use hittable::{HitRecord, Hittable};
+use itertools::Itertools;
 use log::error;
 use pixels::{Pixels, SurfaceTexture};
 use rand::random;
 use ray::Ray;
-use vec3::{Color, Point3, Vec3};
+use std::error::Error;
+use vec3::{Color, Point3};
 use winit::{
     dpi::LogicalSize,
     event::{Event, VirtualKeyCode},
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
 };
-
-use itertools::Itertools;
 use winit_input_helper::WinitInputHelper;
-
-use crate::{
-    camera::Camera,
-    hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::VecOps,
-};
 
 mod camera;
 mod hittable;
 mod ray;
 mod vec3;
 
-const WIDTH: u32 = 400;
-const HEIGHT: u32 = 225;
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 450;
 
 fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     let mut hit_record = HitRecord::new(); // TODO: Option?
@@ -89,9 +82,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let window = {
         let size = LogicalSize::new(WIDTH, HEIGHT);
         WindowBuilder::new()
-            .with_title("Hello Pixels")
+            .with_title("Rusty Raytracing")
             .with_inner_size(size)
-            .with_min_inner_size(size)
             .build(&event_loop)
             .unwrap()
     };
@@ -102,9 +94,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     let render: Vec<u8> = draw(WIDTH, HEIGHT);
-    println!("Rendered");
     pixels.get_frame().copy_from_slice(&render[..]);
-    println!("Copied!");
 
     event_loop.run(move |event, _, control_flow| {
         // Draw the current frame
