@@ -27,8 +27,8 @@ mod hittable;
 mod ray;
 mod vec3;
 
-const WIDTH: u32 = 400;
-const HEIGHT: u32 = 225;
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 450;
 const MAX_DEPTH: u32 = 50;
 const SAMPLE_PER_PIXELS: u32 = 100;
 
@@ -56,7 +56,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     }
 
     let mut hit_record = HitRecord::new(); // TODO: Option?
-    if world.hit(ray, 0.0, f64::INFINITY, &mut hit_record) {
+    if world.hit(ray, 0.001, f64::INFINITY, &mut hit_record) {
         return 0.5
             * ray_color(
                 &Ray {
@@ -97,6 +97,7 @@ fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
                 })
                 .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
                 .div(SAMPLE_PER_PIXELS as f64)
+                .powf(0.5)
                 .mul(256f64);
 
             vec![
