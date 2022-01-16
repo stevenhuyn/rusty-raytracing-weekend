@@ -50,6 +50,10 @@ fn random_in_unit_sphere() -> Vec3 {
     }
 }
 
+fn random_unit_vector() -> Vec3 {
+    random_in_unit_sphere().normalize()
+}
+
 fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     if depth == 0 {
         return Color::new(0.0, 0.0, 0.0);
@@ -61,7 +65,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
             * ray_color(
                 &Ray {
                     origin: hit_record.point,
-                    direction: hit_record.normal + random_in_unit_sphere(),
+                    direction: hit_record.normal + random_unit_vector(),
                 },
                 world,
                 depth - 1,
