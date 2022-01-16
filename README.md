@@ -6,3 +6,8 @@ Goals
 - Idiomatic Rust
 - Functional Style
 - Find out what happens if you're inside a perfectly spherical mirror
+
+To run:
+`cargo run --release`
+
+<img src="media/8.6.png" width="400px"/>
