@@ -8,7 +8,7 @@ use log::error;
 use pixels::{Pixels, SurfaceTexture};
 use rand::random;
 use ray::Ray;
-use std::{error::Error, ops::AddAssign};
+use std::error::Error;
 use std::{
     ops::{Div, Mul},
     time::Instant,
@@ -30,13 +30,18 @@ mod vec3;
 const WIDTH: u32 = 400;
 const HEIGHT: u32 = 225;
 const MAX_DEPTH: u32 = 50;
+const SAMPLE_PER_PIXELS: u32 = 100;
+
+fn random_double(lower: f64, upper: f64) -> f64 {
+    random::<f64>() * (upper - lower) + lower
+}
 
 fn random_in_unit_sphere() -> Vec3 {
     loop {
         let p = Vec3::new(
-            random::<f64>() * 2f64 - 1f64,
-            random::<f64>() * 2f64 - 1f64,
-            random::<f64>() * 2f64 - 1f64,
+            random_double(-1.0, 1.0),
+            random_double(-1.0, 1.0),
+            random_double(-1.0, 1.0),
         );
         if p.length_squared() >= 1f64 {
             continue;
@@ -79,22 +84,20 @@ fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Camera
     let camera = Camera::new();
 
-    let samples_per_pixel: u32 = 100;
-
     (0..image_height)
         .rev()
         .cartesian_product(0..image_width)
         .flat_map(|(j, i)| {
-            let pixel_color = (0..samples_per_pixel)
+            let pixel_color = (0..SAMPLE_PER_PIXELS)
                 .map(|_| {
-                    let u = (i as f64 + random::<f64>()) / (image_width - 1) as f64;
-                    let v = (j as f64 + random::<f64>()) / (image_height - 1) as f64;
+                    let u = (i as f64 + random_double(-1.0, 1.0)) / (image_width - 1) as f64;
+                    let v = (j as f64 + random_double(-1.0, 1.0)) / (image_height - 1) as f64;
                     let ray = camera.get_ray(u, v);
                     ray_color(&ray, &world, MAX_DEPTH)
                 })
                 .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
-                .div(samples_per_pixel as f64)
-                .mul(255.999f64);
+                .div(SAMPLE_PER_PIXELS as f64)
+                .mul(256f64);
 
             vec![
                 pixel_color.x as u8,
