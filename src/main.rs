@@ -54,6 +54,16 @@ fn random_unit_vector() -> Vec3 {
     random_in_unit_sphere().normalize()
 }
 
+fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+    let in_unit_sphere = random_in_unit_sphere();
+    if in_unit_sphere.dot(*normal) > 0.0 {
+        // Same direction as normal
+        in_unit_sphere
+    } else {
+        -in_unit_sphere
+    }
+}
+
 fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     if depth == 0 {
         return Color::new(0.0, 0.0, 0.0);
@@ -65,7 +75,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
             * ray_color(
                 &Ray {
                     origin: hit_record.point,
-                    direction: hit_record.normal + random_unit_vector(),
+                    direction: hit_record.normal + random_in_hemisphere(&hit_record.normal),
                 },
                 world,
                 depth - 1,
