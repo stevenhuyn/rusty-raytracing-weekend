@@ -1,4 +1,3 @@
-use log::error;
 use pixels::{Pixels, SurfaceTexture};
 use std::error::Error;
 use std::time::Instant;
@@ -25,11 +24,8 @@ pub const MAX_DEPTH: u32 = 50;
 pub const SAMPLE_PER_PIXELS: u32 = 100;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
-
     let mut now = Instant::now();
     let render: Vec<u8> = draw(WIDTH, HEIGHT);
-
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     let mut input = WinitInputHelper::new();
@@ -55,11 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     event_loop.run(move |event, _, control_flow| {
         // Draw the current frame
         if let Event::RedrawRequested(_) = event {
-            if pixels
-                .render()
-                .map_err(|e| error!("pixels.render() failed: {}", e))
-                .is_err()
-            {
+            if pixels.render().is_err() {
                 *control_flow = ControlFlow::Exit;
                 return;
             }
