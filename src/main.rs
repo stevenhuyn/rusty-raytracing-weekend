@@ -69,8 +69,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
         return Color::new(0.0, 0.0, 0.0);
     }
 
-    let mut hit_record = HitRecord::new(); // TODO: Option?
-    if world.hit(ray, 0.001, f64::INFINITY, &mut hit_record) {
+    if let Some(hit_record) = world.hit(ray, 0.001, f64::INFINITY) {
         return 0.5
             * ray_color(
                 &Ray {

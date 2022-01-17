@@ -14,7 +14,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = ray.origin - self.centre;
         let a = ray.direction.dot(ray.direction);
         let half_b = oc.dot(ray.direction);
@@ -24,14 +24,12 @@ impl Hittable for Sphere {
 
         let root = (-half_b - discriminant.sqrt()) / a;
         if sqrt_disc.is_nan() || (root < t_min || t_max < root) {
-            return false;
+            return None;
         }
 
-        rec.t = root;
-        rec.point = ray.at(rec.t);
-        let outward_normal = (rec.point - self.centre) / self.radius;
-        rec.set_face_normal(ray, outward_normal);
-
-        true
+        let t = root;
+        let point = ray.at(t);
+        let outward_normal = (point - self.centre) / self.radius;
+        Some(HitRecord::new(point, t, ray, outward_normal))
     }
 }
