@@ -6,6 +6,7 @@ pub struct Ray {
 }
 
 impl Ray {
+    #[allow(dead_code)]
     pub fn new(origin: Point3, direction: Vec3) -> Ray {
         Ray { origin, direction }
     }
