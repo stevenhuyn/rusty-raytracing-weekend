@@ -2,7 +2,7 @@ use crate::{
     camera::Camera,
     hittable::{hittable_list::HittableList, sphere::Sphere},
 };
-use hittable::{HitRecord, Hittable};
+use hittable::Hittable;
 use itertools::Itertools;
 use log::error;
 use pixels::{Pixels, SurfaceTexture};

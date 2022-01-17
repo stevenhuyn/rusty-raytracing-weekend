@@ -11,7 +11,6 @@ pub struct HitRecord {
     pub point: Point3,
     pub normal: Vec3,
     pub t: f64,
-    pub front_face: bool,
 }
 
 pub trait Hittable {
@@ -26,11 +25,6 @@ impl HitRecord {
             false => outward_normal,
         };
 
-        HitRecord {
-            point,
-            t,
-            front_face,
-            normal,
-        }
+        HitRecord { point, t, normal }
     }
 }
