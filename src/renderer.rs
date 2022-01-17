@@ -4,8 +4,9 @@ use std::ops::{Div, Mul};
 use crate::{
     camera::Camera,
     hittable::{hittable_list::HittableList, sphere::Sphere, Hittable},
+    material::{Lambertian, Metal},
     ray::Ray,
-    utils::{random_double, random_in_hemisphere},
+    utils::random_double,
     vec3::{Color, Point3},
     MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
@@ -16,15 +17,10 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     }
 
     if let Some(hit_record) = world.hit(ray, 0.001, f64::INFINITY) {
-        return 0.5
-            * ray_color(
-                &Ray {
-                    origin: hit_record.point,
-                    direction: hit_record.normal + random_in_hemisphere(&hit_record.normal),
-                },
-                world,
-                depth - 1,
-            );
+        if let Some((attenuation, scattered)) = hit_record.material.scatter(ray, &hit_record) {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
+        return Color::new(0.0, 0.0, 0.0);
     }
 
     let unit_direction = ray.direction.normalize();
@@ -34,10 +30,26 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 }
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
+    // Materials
+    let material_ground = Lambertian {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    };
+    let material_middle = Metal {
+        albedo: Color::new(0.8, 0.8, 0.8),
+    };
+
     // World
     let world: HittableList = vec![
-        Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)),
-        Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)),
+        Box::new(Sphere::new(
+            Point3::new(0.0, 0.0, -1.0),
+            0.5,
+            &material_middle,
+        )),
+        Box::new(Sphere::new(
+            Point3::new(0.0, -100.5, -1.0),
+            100.0,
+            &material_ground,
+        )),
     ];
 
     // Camera

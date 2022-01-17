@@ -13,6 +13,7 @@ use crate::renderer::draw;
 
 mod camera;
 mod hittable;
+mod material;
 mod ray;
 mod renderer;
 mod utils;
