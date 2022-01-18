@@ -11,3 +11,6 @@ To run:
 `cargo run --release`
 
 <img src="media/8.6.png" width="400px"/>
+
+<img src="media/9.5.png" width="400px"/>
+
