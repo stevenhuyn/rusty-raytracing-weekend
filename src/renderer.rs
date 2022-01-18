@@ -1,5 +1,8 @@
 use itertools::Itertools;
-use std::ops::{Div, Mul};
+use std::{
+    ops::{Div, Mul},
+    rc::Rc,
+};
 
 use crate::{
     camera::Camera,
@@ -31,24 +34,40 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Materials
-    let material_ground = Lambertian {
-        albedo: Color::new(0.7, 0.3, 0.3),
-    };
-    let material_middle = Metal {
+    let material_ground = Rc::new(Lambertian {
         albedo: Color::new(0.8, 0.8, 0.8),
-    };
+    });
+    let material_left = Rc::new(Metal {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    });
+    let material_centre = Rc::new(Lambertian {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    });
+    let material_right = Rc::new(Metal {
+        albedo: Color::new(0.8, 0.6, 0.2),
+    });
 
     // World
     let world: HittableList = vec![
         Box::new(Sphere::new(
             Point3::new(0.0, 0.0, -1.0),
             0.5,
-            &material_middle,
+            material_centre,
         )),
         Box::new(Sphere::new(
             Point3::new(0.0, -100.5, -1.0),
             100.0,
-            &material_ground,
+            material_ground,
+        )),
+        Box::new(Sphere::new(
+            Point3::new(-1.0, 0.0, -1.0),
+            0.5,
+            material_left,
+        )),
+        Box::new(Sphere::new(
+            Point3::new(1.0, 0.0, -1.0),
+            0.5,
+            material_right,
         )),
     ];
 
