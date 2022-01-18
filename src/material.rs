@@ -21,7 +21,7 @@ impl Material for Lambertian {
             scatter_direction = rec.normal;
         }
 
-        let attenuation = self.albedo.clone(); // Cloning bad?
+        let attenuation = self.albedo;
         let scattered = Ray {
             origin: rec.point,
             direction: scatter_direction,
@@ -43,7 +43,7 @@ impl Material for Metal {
             direction: reflected,
         };
 
-        let attenuation = self.albedo.clone();
+        let attenuation = self.albedo;
         if scattered.direction.dot(rec.normal) > 0f64 {
             return Some((attenuation, scattered));
         }
