@@ -14,31 +14,13 @@ use crate::{
     MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 
-pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
-    if depth == 0 {
-        return Color::new(0.0, 0.0, 0.0);
-    }
-
-    if let Some(hit_record) = world.hit(ray, 0.001, f64::INFINITY) {
-        if let Some((attenuation, scattered)) = hit_record.material.scatter(ray, &hit_record) {
-            return attenuation * ray_color(&scattered, world, depth - 1);
-        }
-        return Color::new(0.0, 0.0, 0.0);
-    }
-
-    let unit_direction = ray.direction.normalize();
-    let t = 0.5 * (unit_direction.y + 1f64);
-
-    (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
-}
-
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Materials
     let material_ground = Rc::new(Lambertian {
         albedo: Color::new(0.8, 0.8, 0.8),
     });
     let material_left = Rc::new(Metal {
-        albedo: Color::new(0.7, 0.3, 0.3),
+        albedo: Color::new(0.1, 0.1, 0.1),
     });
     let material_centre = Rc::new(Lambertian {
         albedo: Color::new(0.7, 0.3, 0.3),
@@ -83,7 +65,7 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
                     let u = (i as f64 + random_double(-1.0, 1.0)) / (image_width - 1) as f64;
                     let v = (j as f64 + random_double(-1.0, 1.0)) / (image_height - 1) as f64;
                     let ray = camera.get_ray(u, v);
-                    ray_color(&ray, &world, MAX_DEPTH)
+                    ray_color_iter(ray, &world, MAX_DEPTH)
                 })
                 .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
                 .div(SAMPLE_PER_PIXELS as f64)
@@ -98,4 +80,48 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
             ]
         })
         .collect()
+}
+
+fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
+    if depth == 0 {
+        return Color::new(0.0, 0.0, 0.0);
+    }
+
+    if let Some(hit_record) = world.hit(ray, 0.001, f64::INFINITY) {
+        if let Some((attenuation, scattered)) = hit_record.material.scatter(ray, &hit_record) {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
+        return Color::new(0.0, 0.0, 0.0);
+    }
+
+    let unit_direction = ray.direction.normalize();
+    let t = 0.5 * (unit_direction.y + 1f64);
+
+    (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+}
+
+fn ray_color_iter(ray: Ray, world: &dyn Hittable, depth: u32) -> Color {
+    let mut hit_ray = ray;
+    let mut acc = Color::new(1.0, 1.0, 1.0);
+    for _ in 0..depth {
+        if let Some(hit_record) = world.hit(&hit_ray, 0.001, f64::INFINITY) {
+            if let Some((attenuation, scattered)) =
+                hit_record.material.scatter(&hit_ray, &hit_record)
+            {
+                hit_ray = scattered;
+                acc *= attenuation;
+                continue;
+            }
+            acc *= Color::new(0.0, 0.0, 0.0);
+            break;
+        }
+
+        let unit_direction = hit_ray.direction.normalize();
+        let t = 0.5 * (unit_direction.y + 1f64);
+
+        acc *= (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0);
+        break;
+    }
+
+    acc
 }
