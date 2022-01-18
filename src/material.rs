@@ -22,10 +22,7 @@ impl Material for Lambertian {
         }
 
         let attenuation = self.albedo;
-        let scattered = Ray {
-            origin: rec.point,
-            direction: scatter_direction,
-        };
+        let scattered = Ray::new(rec.point, scatter_direction);
 
         Some((attenuation, scattered))
     }
@@ -38,10 +35,7 @@ pub struct Metal {
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
         let reflected = Vec3::reflect(r_in.direction.normalize(), rec.normal);
-        let scattered = Ray {
-            origin: rec.point,
-            direction: reflected,
-        };
+        let scattered = Ray::new(rec.point, reflected);
 
         let attenuation = self.albedo;
         if scattered.direction.dot(rec.normal) > 0f64 {
