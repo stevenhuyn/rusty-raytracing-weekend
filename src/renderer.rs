@@ -38,13 +38,15 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         albedo: Color::new(0.8, 0.8, 0.8),
     });
     let material_left = Rc::new(Metal {
-        albedo: Color::new(0.7, 0.3, 0.3),
+        albedo: Color::new(0.8, 0.8, 0.8),
+        fuzz: 0.3,
     });
     let material_centre = Rc::new(Lambertian {
         albedo: Color::new(0.7, 0.3, 0.3),
     });
     let material_right = Rc::new(Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
+        fuzz: 1.0,
     });
 
     // World
