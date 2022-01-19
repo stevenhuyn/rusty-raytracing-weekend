@@ -14,7 +14,7 @@ impl Camera {
     pub fn new() -> Camera {
         let aspect_ratio = 16.0 / 9.0;
         let viewport_height = 2.0;
-        let viewport_width = aspect_ratio * viewport_height as f64;
+        let viewport_width = aspect_ratio * viewport_height;
         let focal_length = 1.0;
 
         let origin = Point3::new(0.0, 0.0, 0.0);

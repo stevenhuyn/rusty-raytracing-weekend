@@ -7,7 +7,7 @@ use std::{
 use crate::{
     camera::Camera,
     hittable::{hittable_list::HittableList, sphere::Sphere, Hittable},
-    material::{Lambertian, Metal},
+    material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
     vec3::{Color, Point3},
@@ -34,19 +34,20 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Materials
-    let material_ground = Rc::new(Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.8),
+    let material_ground: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
     });
-    let material_left = Rc::new(Metal {
-        albedo: Color::new(0.8, 0.8, 0.8),
-        fuzz: 0.3,
+    let diffuse_blue: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.1, 0.2, 0.5),
     });
-    let material_centre = Rc::new(Lambertian {
-        albedo: Color::new(0.7, 0.3, 0.3),
-    });
-    let material_right = Rc::new(Metal {
+    let glass_material: Rc<dyn Material> = Rc::new(Dielectric { ir: 1.5 });
+    let gold_material: Rc<dyn Material> = Rc::new(Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
         fuzz: 1.0,
+    });
+    let light_metal: Rc<dyn Material> = Rc::new(Metal {
+        albedo: Color::new(0.8, 0.8, 0.8),
+        fuzz: 0.3,
     });
 
     // World
@@ -54,22 +55,22 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         Box::new(Sphere::new(
             Point3::new(0.0, 0.0, -1.0),
             0.5,
-            material_centre,
+            Rc::clone(&glass_material),
         )),
         Box::new(Sphere::new(
             Point3::new(0.0, -100.5, -1.0),
             100.0,
-            material_ground,
+            Rc::clone(&material_ground),
         )),
         Box::new(Sphere::new(
             Point3::new(-1.0, 0.0, -1.0),
             0.5,
-            material_left,
+            Rc::clone(&glass_material),
         )),
         Box::new(Sphere::new(
             Point3::new(1.0, 0.0, -1.0),
             0.5,
-            material_right,
+            Rc::clone(&gold_material),
         )),
     ];
 

@@ -22,15 +22,21 @@ impl Sphere {
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = ray.origin - self.centre;
-        let a = ray.direction.dot(ray.direction);
+        let a = ray.direction.length_squared();
         let half_b = oc.dot(ray.direction);
-        let c = oc.dot(oc) - self.radius * self.radius;
+        let c = oc.length_squared() - self.radius * self.radius;
         let discriminant = half_b * half_b - a * c;
-        let sqrt_disc = discriminant.sqrt();
-
-        let root = (-half_b - discriminant.sqrt()) / a;
-        if sqrt_disc.is_nan() || (root < t_min || t_max < root) {
+        if discriminant < 0.0 {
             return None;
+        }
+
+        let sqrtd = discriminant.sqrt();
+        let mut root = (-half_b - sqrtd) / a;
+        if root < t_min || t_max < root {
+            root = (-half_b + sqrtd) / a;
+            if root < t_min || t_max < root {
+                return None;
+            }
         }
 
         let t = root;
