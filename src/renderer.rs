@@ -11,7 +11,7 @@ use crate::{
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
-    vec3::{Color, Point3},
+    vec3::{Color, Point3, Vec3},
     ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 
@@ -35,31 +35,55 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Materials
-    let material_left: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(0.0, 0.0, 1.0),
+    let material_ground: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.8),
     });
-    let material_right: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(1.0, 0.0, 0.0),
+    let material_centre: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.1, 0.2, 0.5),
     });
-
-    let r = (PI / 4.0).cos();
+    let material_left: Rc<dyn Material> = Rc::new(Dielectric { ir: 1.5 });
+    let material_right: Rc<dyn Material> = Rc::new(Metal {
+        albedo: Color::new(0.8, 0.6, 0.2),
+        fuzz: 0.0,
+    });
 
     // World
     let world: HittableList = vec![
         Box::new(Sphere::new(
-            Point3::new(-r, 0.0, -1.0),
-            r,
+            Point3::new(0.0, -100.5, -1.0),
+            100.0,
+            Rc::clone(&material_ground),
+        )),
+        Box::new(Sphere::new(
+            Point3::new(-1.0, 0.0, -1.0),
+            0.5,
             Rc::clone(&material_left),
         )),
         Box::new(Sphere::new(
-            Point3::new(r, 0.0, -1.0),
-            r,
+            Point3::new(-1.0, 0.0, -1.0),
+            -0.45,
+            Rc::clone(&material_left),
+        )),
+        Box::new(Sphere::new(
+            Point3::new(0.0, 0.0, -1.0),
+            0.5,
+            Rc::clone(&material_centre),
+        )),
+        Box::new(Sphere::new(
+            Point3::new(1.0, 0.0, -1.0),
+            0.5,
             Rc::clone(&material_right),
         )),
     ];
 
     // Camera
-    let camera = Camera::new(90.0, ASPECT_RATIO);
+    let camera = Camera::new(
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        20.0,
+        ASPECT_RATIO,
+    );
 
     (0..image_height)
         .rev()
