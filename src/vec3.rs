@@ -1,5 +1,7 @@
 use glam::DVec3;
 
+use crate::utils::random_double;
+
 pub type Point3 = DVec3;
 pub type Color = DVec3;
 pub type Vec3 = DVec3;
@@ -8,6 +10,7 @@ pub trait VecOps {
     fn write_color(&self, samples_per_pixel: i64);
     fn near_zero(&self) -> bool;
     fn reflect(v: Vec3, n: Vec3) -> Vec3;
+    fn random_color() -> Color;
 }
 
 impl VecOps for Vec3 {
@@ -36,5 +39,13 @@ impl VecOps for Vec3 {
 
     fn reflect(v: Vec3, n: Vec3) -> Vec3 {
         v - 2f64 * v.dot(n) * n
+    }
+
+    fn random_color() -> Color {
+        Color::new(
+            random_double(0.0, 1.0),
+            random_double(0.0, 1.0),
+            random_double(0.0, 1.0),
+        )
     }
 }

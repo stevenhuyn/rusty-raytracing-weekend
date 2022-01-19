@@ -1,6 +1,5 @@
 use itertools::Itertools;
 use std::{
-    f64::consts::PI,
     ops::{Div, Mul},
     rc::Rc,
 };
@@ -11,7 +10,7 @@ use crate::{
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
-    vec3::{Color, Point3, Vec3},
+    vec3::{Color, Point3, Vec3, VecOps},
     ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 
@@ -34,54 +33,81 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 }
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
-    // Materials
-    let material_ground: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.8),
+    let mut world: HittableList = Vec::new();
+
+    let ground_material: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.5, 0.5, 0.5),
     });
-    let material_centre: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(0.1, 0.2, 0.5),
+
+    world.push(Box::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        ground_material,
+    )));
+
+    let glass_material = Rc::new(Dielectric { ir: 1.5 });
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let a = a as f64;
+            let b = b as f64;
+            let choose_mat = random_double(0.0, 1.0);
+            let centre = Point3::new(
+                a + 0.9 * random_double(0.0, 1.0),
+                0.2,
+                b + 0.9 * random_double(0.0, 1.0),
+            );
+
+            if (centre - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                let sphere_material: Rc<dyn Material>;
+
+                if choose_mat < 0.8 {
+                    let albedo = Vec3::random_color() * Vec3::random_color();
+                    sphere_material = Rc::new(Lambertian { albedo });
+                    world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
+                } else if choose_mat < 0.95 {
+                    let albedo = Vec3::random_color();
+                    let fuzz = random_double(0.0, 0.5);
+                    sphere_material = Rc::new(Metal { albedo, fuzz });
+                    world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
+                } else {
+                    world.push(Box::new(Sphere::new(centre, 0.2, glass_material.clone())));
+                }
+            }
+        }
+    }
+
+    world.push(Box::new(Sphere::new(
+        Point3::new(0.0, 1.0, 0.0),
+        1.0,
+        glass_material,
+    )));
+
+    let big_lamb = Rc::new(Lambertian {
+        albedo: Color::new(0.4, 0.2, 0.1),
     });
-    let material_left: Rc<dyn Material> = Rc::new(Dielectric { ir: 1.5 });
-    let material_right: Rc<dyn Material> = Rc::new(Metal {
-        albedo: Color::new(0.8, 0.6, 0.2),
+    world.push(Box::new(Sphere::new(
+        Point3::new(-4.0, 1.0, 0.0),
+        1.0,
+        big_lamb,
+    )));
+
+    let big_metal = Rc::new(Metal {
+        albedo: Color::new(0.7, 0.6, 0.5),
         fuzz: 0.0,
     });
-
-    // World
-    let world: HittableList = vec![
-        Box::new(Sphere::new(
-            Point3::new(0.0, -100.5, -1.0),
-            100.0,
-            Rc::clone(&material_ground),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(-1.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&material_left),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(-1.0, 0.0, -1.0),
-            -0.45,
-            Rc::clone(&material_left),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(0.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&material_centre),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(1.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&material_right),
-        )),
-    ];
+    world.push(Box::new(Sphere::new(
+        Point3::new(4.0, 1.0, 0.0),
+        1.0,
+        big_metal,
+    )));
 
     // Camera
-    let lookfrom = Point3::new(3.0, 3.0, 2.0);
-    let lookat = Point3::new(0.0, 0.0, -1.0);
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
-    let dist_to_focus = (lookfrom - lookat).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
     let camera = Camera::new(
         lookfrom,
         lookat,
