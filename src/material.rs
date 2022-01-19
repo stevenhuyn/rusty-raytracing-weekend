@@ -1,7 +1,7 @@
 use crate::{
     hittable::HitRecord,
     ray::Ray,
-    utils::{random_in_unit_sphere, random_unit_vector},
+    utils::{random_double, random_in_unit_sphere, random_unit_vector},
     vec3::{Color, Vec3, VecOps},
 };
 
@@ -64,13 +64,24 @@ impl Material for Dielectric {
 
         let cannot_reflect = refraction_ratio * sin_theta > 1.0;
 
-        let direction = match cannot_reflect {
+        let direction = match cannot_reflect
+            || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double(0.0, 1.0)
+        {
             true => Vec3::reflect(unit_direction, rec.normal),
             false => refract(unit_direction, rec.normal, refraction_ratio),
         };
 
         let scattered = Ray::new(rec.point, direction);
         Some((Color::new(1.0, 1.0, 1.0), scattered))
+    }
+}
+
+impl Dielectric {
+    fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
+        // Use Schlick's approximation for reflectance.
+        let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        r0 = r0 * r0;
+        r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
     }
 }
 
