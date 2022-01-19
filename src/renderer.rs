@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use std::{
+    f64::consts::PI,
     ops::{Div, Mul},
     rc::Rc,
 };
@@ -11,7 +12,7 @@ use crate::{
     ray::Ray,
     utils::random_double,
     vec3::{Color, Point3},
-    MAX_DEPTH, SAMPLE_PER_PIXELS,
+    ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
@@ -34,54 +35,31 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     // Materials
-    let material_ground: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.0),
+    let material_left: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(0.0, 0.0, 1.0),
     });
-    let diffuse_blue: Rc<dyn Material> = Rc::new(Lambertian {
-        albedo: Color::new(0.1, 0.2, 0.5),
+    let material_right: Rc<dyn Material> = Rc::new(Lambertian {
+        albedo: Color::new(1.0, 0.0, 0.0),
     });
-    let glass_material: Rc<dyn Material> = Rc::new(Dielectric { ir: 1.5 });
 
-    let gold_material: Rc<dyn Material> = Rc::new(Metal {
-        albedo: Color::new(0.8, 0.6, 0.2),
-        fuzz: 0.0,
-    });
-    let light_metal: Rc<dyn Material> = Rc::new(Metal {
-        albedo: Color::new(0.8, 0.8, 0.8),
-        fuzz: 0.3,
-    });
+    let r = (PI / 4.0).cos();
 
     // World
     let world: HittableList = vec![
         Box::new(Sphere::new(
-            Point3::new(0.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&diffuse_blue),
+            Point3::new(-r, 0.0, -1.0),
+            r,
+            Rc::clone(&material_left),
         )),
         Box::new(Sphere::new(
-            Point3::new(0.0, -100.5, -1.0),
-            100.0,
-            Rc::clone(&material_ground),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(-1.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&glass_material),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(-1.0, 0.0, -1.0),
-            -0.4,
-            Rc::clone(&glass_material),
-        )),
-        Box::new(Sphere::new(
-            Point3::new(1.0, 0.0, -1.0),
-            0.5,
-            Rc::clone(&gold_material),
+            Point3::new(r, 0.0, -1.0),
+            r,
+            Rc::clone(&material_right),
         )),
     ];
 
     // Camera
-    let camera = Camera::new();
+    let camera = Camera::new(90.0, ASPECT_RATIO);
 
     (0..image_height)
         .rev()

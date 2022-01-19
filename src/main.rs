@@ -19,8 +19,9 @@ mod renderer;
 mod utils;
 mod vec3;
 
+pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
 pub const WIDTH: u32 = 800;
-pub const HEIGHT: u32 = 450;
+pub const HEIGHT: u32 = (WIDTH as f64 / ASPECT_RATIO) as u32;
 pub const MAX_DEPTH: u32 = 50;
 pub const SAMPLE_PER_PIXELS: u32 = 100;
 
