@@ -30,7 +30,7 @@ impl Material for Lambertian {
 
 pub struct Metal {
     pub albedo: Color,
-    pub fuzz: f64,
+    pub fuzz: f64, // TODO: Make a new function, fuzz cannot be > 1
 }
 
 impl Material for Metal {

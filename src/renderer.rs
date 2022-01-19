@@ -41,6 +41,7 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         albedo: Color::new(0.1, 0.2, 0.5),
     });
     let glass_material: Rc<dyn Material> = Rc::new(Dielectric { ir: 1.5 });
+
     let gold_material: Rc<dyn Material> = Rc::new(Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
         fuzz: 0.0,
@@ -65,6 +66,11 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         Box::new(Sphere::new(
             Point3::new(-1.0, 0.0, -1.0),
             0.5,
+            Rc::clone(&glass_material),
+        )),
+        Box::new(Sphere::new(
+            Point3::new(-1.0, 0.0, -1.0),
+            -0.4,
             Rc::clone(&glass_material),
         )),
         Box::new(Sphere::new(
