@@ -11,7 +11,7 @@ use crate::{
     ray::Ray,
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
-    ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
+    window::{ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS},
 };
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
