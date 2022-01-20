@@ -1,7 +1,7 @@
-use itertools::Itertools;
+use rayon::prelude::*;
 use std::{
     ops::{Div, Mul},
-    rc::Rc,
+    sync::Arc,
 };
 
 use crate::{
@@ -35,7 +35,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     let mut world: HittableList = Vec::new();
 
-    let ground_material: Rc<dyn Material> = Rc::new(Lambertian {
+    let ground_material: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Color::new(0.5, 0.5, 0.5),
     });
 
@@ -45,7 +45,7 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         ground_material,
     )));
 
-    let glass_material = Rc::new(Dielectric { ir: 1.5 });
+    let glass_material: Arc<dyn Material> = Arc::new(Dielectric { ir: 1.5 });
 
     for a in -11..11 {
         for b in -11..11 {
@@ -59,16 +59,16 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
             );
 
             if (centre - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                let sphere_material: Rc<dyn Material>;
+                let sphere_material: Arc<dyn Material>;
 
                 if choose_mat < 0.8 {
                     let albedo = Vec3::random_color() * Vec3::random_color();
-                    sphere_material = Rc::new(Lambertian { albedo });
+                    sphere_material = Arc::new(Lambertian { albedo });
                     world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
                 } else if choose_mat < 0.95 {
                     let albedo = Vec3::random_color();
                     let fuzz = random_double(0.0, 0.5);
-                    sphere_material = Rc::new(Metal { albedo, fuzz });
+                    sphere_material = Arc::new(Metal { albedo, fuzz });
                     world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
                 } else {
                     world.push(Box::new(Sphere::new(centre, 0.2, glass_material.clone())));
@@ -83,7 +83,7 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         glass_material,
     )));
 
-    let big_lamb = Rc::new(Lambertian {
+    let big_lamb: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Color::new(0.4, 0.2, 0.1),
     });
     world.push(Box::new(Sphere::new(
@@ -92,7 +92,7 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         big_lamb,
     )));
 
-    let big_metal = Rc::new(Metal {
+    let big_metal = Arc::new(Metal {
         albedo: Color::new(0.7, 0.6, 0.5),
         fuzz: 0.0,
     });
@@ -119,8 +119,9 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     );
 
     (0..image_height)
+        .into_par_iter()
         .rev()
-        .cartesian_product(0..image_width)
+        .flat_map(|x| (0..image_width).into_par_iter().map(move |y| (x, y)))
         .flat_map(|(j, i)| {
             let pixel_color = (0..SAMPLE_PER_PIXELS)
                 .map(|_| {

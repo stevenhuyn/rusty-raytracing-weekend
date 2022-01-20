@@ -1,4 +1,7 @@
-use std::rc::Rc;
+use std::{
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
 
 use super::{HitRecord, Hittable};
 use crate::{material::Material, ray::Ray, vec3::Point3};
@@ -6,11 +9,11 @@ use crate::{material::Material, ray::Ray, vec3::Point3};
 pub struct Sphere {
     centre: Point3,
     radius: f64,
-    material: Rc<dyn Material>,
+    material: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(centre: Point3, radius: f64, material: Rc<dyn Material>) -> Sphere {
+    pub fn new(centre: Point3, radius: f64, material: Arc<dyn Material>) -> Sphere {
         Sphere {
             centre,
             radius,
@@ -48,7 +51,7 @@ impl Hittable for Sphere {
             t,
             ray,
             outward_normal,
-            Rc::clone(&self.material),
+            Arc::clone(&self.material),
         ))
     }
 }

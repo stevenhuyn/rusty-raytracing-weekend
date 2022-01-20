@@ -20,7 +20,7 @@ mod utils;
 mod vec3;
 
 pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
-pub const WIDTH: u32 = 1200;
+pub const WIDTH: u32 = 400;
 pub const HEIGHT: u32 = (WIDTH as f64 / ASPECT_RATIO) as u32;
 pub const MAX_DEPTH: u32 = 50;
 pub const SAMPLE_PER_PIXELS: u32 = 500;
