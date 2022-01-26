@@ -1,8 +1,8 @@
 use clap::Parser;
-use image::{io::Reader, save_buffer, ColorType, ImageBuffer, RgbImage, RgbaImage};
+use image::{save_buffer, ColorType};
 use renderer::draw;
-use std::io::Cursor;
-use window::{render_window, HEIGHT, WIDTH};
+use std::time::Instant;
+use window::render_window;
 
 mod camera;
 mod hittable;
@@ -16,29 +16,47 @@ mod window;
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
-    /// Name of the person to greet
+    /// Width of resulting render in pixels
     #[clap(short, long)]
     width: Option<u32>,
 
-    /// Number of times to greet
+    /// Height of resulting render in pixels
     #[clap(short, long)]
     height: Option<u32>,
 
+    /// Whether to save file
     #[clap(short, long)]
     save: bool,
 
+    /// Specify filename of render if saved
     #[clap(short, long)]
     filename: Option<String>,
 }
 
+pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
+pub const DEFAULT_WIDTH: u32 = 400;
+pub const MAX_DEPTH: u32 = 50;
+pub const SAMPLE_PER_PIXELS: u32 = 500;
+
 fn main() {
-    // let cli = Cli::parse();
+    let cli = Cli::parse();
+    let width = cli.width.unwrap_or(DEFAULT_WIDTH);
+    let height = cli
+        .height
+        .unwrap_or((DEFAULT_WIDTH as f64 / ASPECT_RATIO) as u32);
+    let filename = cli
+        .filename
+        .unwrap_or(format!("image{}x{}.png", width, height));
+    let path = format!("./renders/{}", filename);
 
-    let buffer = draw(WIDTH, HEIGHT);
-    save_buffer("image.png", &buffer, WIDTH, HEIGHT, ColorType::Rgba8).unwrap();
-}
+    let now = Instant::now();
+    let buffer: Vec<u8> = draw(width, height);
+    println!("Rendered in {}", now.elapsed().as_secs_f64());
 
-fn render_to_file(buffer: &[u8]) {
-    let img = Reader::new(Cursor::new(buffer)).decode().unwrap();
-    img.save("render.png").unwrap();
+    if cli.save {
+        save_buffer(path, &buffer, width, height, ColorType::Rgba8).unwrap();
+    }
+
+    // How to not use handle here?
+    render_window(width, height, &buffer).unwrap();
 }

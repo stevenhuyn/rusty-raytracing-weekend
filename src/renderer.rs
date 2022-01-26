@@ -1,17 +1,16 @@
-use rayon::prelude::*;
-use std::{
-    ops::{Div, Mul},
-    sync::Arc,
-};
-
 use crate::{
     camera::Camera,
-    hittable::{hittable_list::HittableList, sphere::Sphere, Hittable},
+    hittable::{sphere::Sphere, world::World, Hittable},
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
-    window::{ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS},
+    ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
+};
+use rayon::prelude::*;
+use std::{
+    ops::{Div, Mul},
+    sync::Arc,
 };
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
@@ -33,7 +32,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 }
 
 pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
-    let mut world: HittableList = Vec::new();
+    let mut world: World = Vec::new();
 
     let ground_material: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Color::new(0.5, 0.5, 0.5),

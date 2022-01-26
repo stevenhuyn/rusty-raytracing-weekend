@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::Arc;
 
 use super::{HitRecord, Hittable};
 use crate::{material::Material, ray::Ray, vec3::Point3};

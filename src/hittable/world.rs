@@ -1,9 +1,9 @@
 use super::{HitRecord, Hittable};
 use crate::ray::Ray;
 
-pub type HittableList = Vec<Box<dyn Hittable>>;
+pub type World = Vec<Box<dyn Hittable>>;
 
-impl Hittable for HittableList {
+impl Hittable for World {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut closest_hit: Option<HitRecord> = None;
         let mut closest_so_far = t_max;

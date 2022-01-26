@@ -6,8 +6,8 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-pub mod hittable_list;
 pub mod sphere;
+pub mod world;
 
 pub struct HitRecord {
     pub point: Point3,

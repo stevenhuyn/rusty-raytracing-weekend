@@ -9,23 +9,11 @@ use winit::{
 };
 use winit_input_helper::WinitInputHelper;
 
-use crate::renderer::draw;
-
-pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
-pub const WIDTH: u32 = 400;
-pub const HEIGHT: u32 = (WIDTH as f64 / ASPECT_RATIO) as u32;
-pub const MAX_DEPTH: u32 = 50;
-pub const SAMPLE_PER_PIXELS: u32 = 500;
-
-pub fn render_window() -> Result<(), Box<dyn Error>> {
-    let mut now = Instant::now();
-    let render: Vec<u8> = draw(WIDTH, HEIGHT);
-    println!("Rendered in {}", now.elapsed().as_secs_f64());
-
+pub fn render_window(width: u32, height: u32, buffer: &[u8]) -> Result<(), Box<dyn Error>> {
     let mut input = WinitInputHelper::new();
     let event_loop = EventLoop::new();
     let window = {
-        let size = LogicalSize::new(WIDTH, HEIGHT);
+        let size = LogicalSize::new(width, height);
         WindowBuilder::new()
             .with_title("Rusty Raytracing")
             .with_inner_size(size)
@@ -34,12 +22,12 @@ pub fn render_window() -> Result<(), Box<dyn Error>> {
     };
 
     let mut pixels = {
-        let surface_texture = SurfaceTexture::new(WIDTH, HEIGHT, &window);
-        Pixels::new(WIDTH, HEIGHT, surface_texture)?
+        let surface_texture = SurfaceTexture::new(width, height, &window);
+        Pixels::new(width, height, surface_texture)?
     };
 
-    now = Instant::now();
-    pixels.get_frame().copy_from_slice(&render[..]);
+    let now = Instant::now();
+    pixels.get_frame().copy_from_slice(buffer);
     println!("Copied frame buffer in {}", now.elapsed().as_secs_f64());
 
     event_loop.run(move |event, _, control_flow| {
