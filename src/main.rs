@@ -31,6 +31,10 @@ struct Cli {
     /// Specify filename of render if saved
     #[clap(short, long)]
     filename: Option<String>,
+
+    /// Don't render to a window
+    #[clap(short, long)]
+    headless: bool,
 }
 
 pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
@@ -53,5 +57,7 @@ fn main() {
     }
 
     // How to not use handle here?
-    render_window(width, height, &buffer).unwrap();
+    if !cli.headless {
+        render_window(width, height, &buffer).unwrap();
+    }
 }
