@@ -5,7 +5,7 @@ use crate::{
     ray::Ray,
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
-    ASPECT_RATIO, MAX_DEPTH, SAMPLE_PER_PIXELS,
+    MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 use rayon::prelude::*;
 use std::{
@@ -107,12 +107,13 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
     let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
     let camera = Camera::new(
         lookfrom,
         lookat,
         vup,
         20.0,
-        ASPECT_RATIO,
+        aspect_ratio,
         aperture,
         dist_to_focus,
     );

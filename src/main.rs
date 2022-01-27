@@ -33,7 +33,7 @@ struct Cli {
     filename: Option<String>,
 
     /// Don't render to a window
-    #[clap(short, long)]
+    #[clap(short = 'i', long)]
     headless: bool,
 }
 
