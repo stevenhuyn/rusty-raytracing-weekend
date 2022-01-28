@@ -6,6 +6,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
+pub mod moving_sphere;
 pub mod sphere;
 pub mod world;
 
