@@ -12,6 +12,7 @@ mod renderer;
 mod utils;
 mod vec3;
 mod window;
+mod aabb;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
