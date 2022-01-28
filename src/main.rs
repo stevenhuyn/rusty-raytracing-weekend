@@ -1,6 +1,6 @@
 use clap::Parser;
 use image::{save_buffer, ColorType};
-use renderer::draw;
+use renderer::draw_random_scene;
 use std::time::Instant;
 use window::render_window;
 
@@ -49,7 +49,7 @@ fn main() {
     let filename = cli.filename.unwrap_or_else(|| "render.png".to_string());
 
     let now = Instant::now();
-    let buffer: Vec<u8> = draw(width, height);
+    let buffer: Vec<u8> = draw_random_scene(width, height);
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

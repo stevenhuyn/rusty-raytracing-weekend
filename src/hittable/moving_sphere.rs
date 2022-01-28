@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{material::Material, vec3::Point3};
+use crate::{material::Material, ray::Ray, vec3::Point3};
 
 use super::{HitRecord, Hittable};
 

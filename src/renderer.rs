@@ -1,6 +1,6 @@
 use crate::{
     camera::Camera,
-    hittable::{sphere::Sphere, world::World, Hittable},
+    hittable::{moving_sphere::MovingSphere, sphere::Sphere, world::World, Hittable},
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
@@ -31,7 +31,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
 
-pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
+pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
     let mut world: World = Vec::new();
 
     let ground_material: Arc<dyn Material> = Arc::new(Lambertian {
@@ -63,7 +63,15 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
                 if choose_mat < 0.8 {
                     let albedo = Vec3::random_color() * Vec3::random_color();
                     sphere_material = Arc::new(Lambertian { albedo });
-                    world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
+                    let centre2 = centre + Vec3::new(0.0, random_double(0.0, 0.5), 0.0);
+                    world.push(Box::new(MovingSphere::new(
+                        centre,
+                        centre2,
+                        0.0,
+                        1.0,
+                        0.2,
+                        sphere_material.clone(),
+                    )));
                 } else if choose_mat < 0.95 {
                     let albedo = Vec3::random_color();
                     let fuzz = random_double(0.0, 0.5);
@@ -116,6 +124,8 @@ pub fn draw(image_width: u32, image_height: u32) -> Vec<u8> {
         aspect_ratio,
         aperture,
         dist_to_focus,
+        0.0,
+        1.0,
     );
 
     (0..image_height)
