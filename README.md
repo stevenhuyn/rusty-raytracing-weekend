@@ -1,6 +1,6 @@
 # rusty-raytracing-weekend
 
-Following [_Ray Tracing in One Weekend_](https://raytracing.github.io/) but in Rust!
+Following [_Ray Tracing in One Weekend_](https://raytracing.github.io/) to make a CPU raytracer but in Rust!
 
 
 Status of the 3 books:
