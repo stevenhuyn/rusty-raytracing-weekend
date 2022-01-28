@@ -8,10 +8,13 @@ struct AABB {
 impl AABB {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> bool {
         for a in 0usize..=2 {
-            let t0 = ((self.minimum[a] - r.origin[a]) / r.direction[a])
-                .min((self.maximum[a] - r.origin[a]) / r.direction[a]);
-            let t1 = ((self.minimum[a] - r.origin[a]) / r.direction[a])
-                .max((self.maximum[a] - r.origin[a]) / r.direction[a]);
+            let inv_d = 1f64 / r.direction[a];
+            let mut t0 = (self.minimum[a] - r.origin[a]) * inv_d;
+            let mut t1 = (self.maximum[a] - r.origin[a]) * inv_d;
+
+            if inv_d < 0f64 {
+                (t1, t0) = (t0, t1);
+            }
 
             let t_min = t0.max(t_min);
             let t_max = t1.min(t_max);
@@ -21,6 +24,6 @@ impl AABB {
             }
         }
 
-        return true;
+        true
     }
 }
