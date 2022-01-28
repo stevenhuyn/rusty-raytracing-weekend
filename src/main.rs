@@ -56,7 +56,6 @@ fn main() {
         save_buffer(filename, &buffer, width, height, ColorType::Rgba8).unwrap();
     }
 
-    // How to not use handle here?
     if !cli.headless {
         render_window(width, height, &buffer).unwrap();
     }
