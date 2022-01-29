@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-    aabb::AABB,
+    aabb::Aabb,
     material::Material,
     ray::Ray,
     vec3::{Point3, Vec3},
@@ -76,17 +76,17 @@ impl Hittable for MovingSphere {
         ))
     }
 
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<crate::aabb::AABB> {
-        let box0 = AABB::new(
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<crate::aabb::Aabb> {
+        let box0 = Aabb::new(
             self.centre(time0) - Vec3::new(self.radius, self.radius, self.radius),
             self.centre(time0) + Vec3::new(self.radius, self.radius, self.radius),
         );
 
-        let box1 = AABB::new(
+        let box1 = Aabb::new(
             self.centre(time1) - Vec3::new(self.radius, self.radius, self.radius),
             self.centre(time1) + Vec3::new(self.radius, self.radius, self.radius),
         );
 
-        Some(AABB::surrounding_box(box0, box1))
+        Some(Aabb::surrounding_box(box0, box1))
     }
 }

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use super::{HitRecord, Hittable};
 use crate::{
-    aabb::AABB,
+    aabb::Aabb,
     material::Material,
     ray::Ray,
     vec3::{Point3, Vec3},
@@ -57,8 +57,8 @@ impl Hittable for Sphere {
         ))
     }
 
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<AABB> {
-        let output_box = AABB::new(
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+        let output_box = Aabb::new(
             self.centre - Vec3::new(self.radius, self.radius, self.radius),
             self.centre + Vec3::new(self.radius, self.radius, self.radius),
         );

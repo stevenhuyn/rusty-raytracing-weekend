@@ -1,5 +1,5 @@
 use super::{HitRecord, Hittable};
-use crate::{aabb::AABB, ray::Ray};
+use crate::{aabb::Aabb, ray::Ray};
 
 pub type World = Vec<Box<dyn Hittable>>;
 
@@ -18,7 +18,7 @@ impl Hittable for World {
         closest_hit
     }
 
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<crate::aabb::AABB> {
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<crate::aabb::Aabb> {
         if self.is_empty() {
             return None;
         }
@@ -29,7 +29,7 @@ impl Hittable for World {
             if let Some(temp_box) = object.bounding_box(time0, time1) {
                 output_box = match output_box {
                     None => Some(temp_box),
-                    Some(output_box) => Some(AABB::surrounding_box(temp_box, output_box)),
+                    Some(output_box) => Some(Aabb::surrounding_box(temp_box, output_box)),
                 }
             }
         }
