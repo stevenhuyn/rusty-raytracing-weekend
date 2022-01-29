@@ -4,6 +4,7 @@ use renderer::draw_random_scene;
 use std::time::Instant;
 use window::render_window;
 
+mod aabb;
 mod camera;
 mod hittable;
 mod material;
@@ -12,7 +13,6 @@ mod renderer;
 mod utils;
 mod vec3;
 mod window;
-mod aabb;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
