@@ -24,7 +24,6 @@ impl Hittable for World {
         }
 
         let mut output_box = None;
-        let first_box = true;
 
         for object in self {
             if let Some(temp_box) = object.bounding_box(time0, time1) {
