@@ -1,5 +1,6 @@
 use crate::{ray::Ray, vec3::Point3};
 
+#[derive(Clone, Copy)]
 pub struct Aabb {
     pub min: Point3,
     pub max: Point3,
