@@ -4,13 +4,19 @@ use crate::{aabb::Aabb, ray::Ray, utils::random_double};
 
 use super::{world::World, Hittable};
 
-pub struct BvhNode {
-    left: Box<dyn Hittable>,
-    right: Box<dyn Hittable>,
-    bound: Aabb,
+pub enum Bvh {
+    TwinNode {
+        left: Box<dyn Hittable>,
+        right: Box<dyn Hittable>,
+        bound: Aabb,
+    },
+    SingNode {
+        only: Box<dyn Hittable>,
+        bound: Aabb,
+    },
 }
 
-impl BvhNode {
+impl Bvh {
     fn new(mut objects: World, time0: f64, time1: f64) -> Self {
         let axis = random_double(0.0, 2.0).floor() as usize;
 
@@ -21,27 +27,27 @@ impl BvhNode {
             _ => panic!("Unknown axis supplied"),
         };
 
-        let left: Box<dyn Hittable>;
-        let right: Box<dyn Hittable>;
+        // Base case
         if objects.len() == 1 {
-            left = objects.pop().unwrap();
-            right = objects.pop().unwrap();
-        } else {
-            objects.sort_by(comparator);
-            let mid_index = objects.len() / 2;
-            let left_half = objects.drain(0..mid_index).collect();
-            let right_half = objects;
-
-            left = Box::new(Self::new(left_half, time0, time1));
-            right = Box::new(Self::new(right_half, time0, time1));
+            let only = objects.pop().unwrap();
+            let bound = only.bounding_box(time0, time1).unwrap();
+            return Bvh::SingNode { only, bound };
         }
+
+        objects.sort_by(comparator);
+        let mid_index = objects.len() / 2;
+        let left_half = objects.drain(0..mid_index).collect();
+        let right_half = objects;
+
+        let left = Box::new(Self::new(left_half, time0, time1));
+        let right = Box::new(Self::new(right_half, time0, time1));
 
         let left_box = left.bounding_box(time0, time1);
         let right_box = right.bounding_box(time0, time1);
 
         if let (Some(left_box), Some(right_box)) = (left_box, right_box) {
             let bound = Aabb::surrounding_box(left_box, right_box);
-            return BvhNode { left, right, bound };
+            return Bvh::TwinNode { left, right, bound };
         }
 
         panic!("No bounding box in BvhNode constructor");
@@ -72,19 +78,27 @@ impl BvhNode {
     }
 }
 
-impl Hittable for BvhNode {
+impl Hittable for Bvh {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<super::HitRecord> {
-        if !self.bound.hit(ray, t_min, t_max) {
-            return None;
+        match self {
+            Bvh::TwinNode { left, right, bound } => {
+                let left_hit_record = left.hit(ray, t_min, t_max);
+                let right_hit_record = right.hit(ray, t_min, t_max);
+
+                left_hit_record.or(right_hit_record)
+            }
+            Bvh::SingNode { only, bound } => only.hit(ray, t_min, t_max),
         }
-
-        let left_hit_record = self.left.hit(ray, t_min, t_max);
-        let right_hit_record = self.right.hit(ray, t_min, t_max);
-
-        left_hit_record.or(right_hit_record)
     }
 
     fn bounding_box(&self, _time0: f64, _time1: f64) -> Option<Aabb> {
-        Some(self.bound)
+        match self {
+            Bvh::TwinNode {
+                left: _,
+                right: _,
+                bound,
+            } => Some(*bound),
+            Bvh::SingNode { only: _, bound } => Some(*bound),
+        }
     }
 }
