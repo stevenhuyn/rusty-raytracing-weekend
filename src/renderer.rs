@@ -1,6 +1,6 @@
 use crate::{
     camera::Camera,
-    hittable::{moving_sphere::MovingSphere, sphere::Sphere, world::World, Hittable},
+    hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, Hittable},
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
     utils::random_double,
@@ -109,6 +109,8 @@ pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
         big_metal,
     )));
 
+    let bvh_world = Bvh::new(world, 0.0, 1.0);
+
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
@@ -138,7 +140,7 @@ pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
                     let u = (i as f64 + random_double(-1.0, 1.0)) / (image_width - 1) as f64;
                     let v = (j as f64 + random_double(-1.0, 1.0)) / (image_height - 1) as f64;
                     let ray = camera.get_ray(u, v);
-                    ray_color(&ray, &world, MAX_DEPTH)
+                    ray_color(&ray, &bvh_world, MAX_DEPTH)
                 })
                 .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
                 .div(SAMPLE_PER_PIXELS as f64)

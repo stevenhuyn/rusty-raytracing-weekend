@@ -17,8 +17,9 @@ pub enum Bvh {
 }
 
 impl Bvh {
-    fn new(mut objects: World, time0: f64, time1: f64) -> Self {
-        let axis = random_double(0.0, 2.0).floor() as usize;
+    pub fn new(mut objects: World, time0: f64, time1: f64) -> Self {
+        // Why random here I wonder?
+        let axis = random_double(0.0, 3.0).floor() as usize;
 
         let comparator = match axis {
             0 => Self::bool_x_compare,
@@ -82,10 +83,15 @@ impl Hittable for Bvh {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<super::HitRecord> {
         match self {
             Bvh::TwinNode { left, right, bound } => {
-                let left_hit_record = left.hit(ray, t_min, t_max);
-                let right_hit_record = right.hit(ray, t_min, t_max);
+                if !bound.hit(ray, t_min, t_max) {
+                    return None;
+                }
 
-                left_hit_record.or(right_hit_record)
+                let left_hit = left.hit(ray, t_min, t_max);
+                let new_t_max = left_hit.as_ref().map(|hr| hr.t).unwrap_or(t_max);
+                let right_hit = right.hit(ray, t_min, new_t_max);
+
+                right_hit.or(left_hit)
             }
             Bvh::SingNode { only, bound } => only.hit(ray, t_min, t_max),
         }
