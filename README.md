@@ -11,11 +11,29 @@ Status of the 3 books:
 - Learn idiomatic Rust
 - Find out what happens if you're inside a perfectly spherical mirror
 
-To run:
-`cargo run --release`
-
 <img src="/media/render_book1.png" alt="Final render of book 1" width=600/>
-
 <img src="/media/checkerMoving.png" alt="Checkered Ground with motion blur" width=600/>
 
+To run:
+```
+cargo run --release
+```
+
+Run with FHD resolution, headless and save file with filename `FHD.png`:
+```
+cargo run --release -- -w 1920 -h 1080 -i -s -f "FHD.png"
+```
+
+See options:
+```
+cargo run --release -- --help
+```
+
+## Dependency breakdown
+- clap - Command line interface Parser
+- glam - 3D math library, using it so I didn't have to implement vec operations
+- pixels - Draw our `vec<RGB value>` (pixels) to window
+- winit - Cross platform window manager/event handler
+- rayon - Literal black box magic that multithreads ya code
+- image - Image encode/decoder, used just to encode and save our `vec<RGB value>` as a png
 
