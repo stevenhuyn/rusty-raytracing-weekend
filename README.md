@@ -16,3 +16,6 @@ To run:
 
 <img src="/media/render_book1.png" alt="Final render of book 1" width=600/>
 
+<img src="/media/checkerMoving.png" alt="Checkered Ground with motion blur" width=600/>
+
+

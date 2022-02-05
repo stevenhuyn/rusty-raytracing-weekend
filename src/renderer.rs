@@ -3,6 +3,7 @@ use crate::{
     hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, Hittable},
     material::{Dielectric, Lambertian, Material, Metal},
     ray::Ray,
+    texture::{CheckerTexture, SolidColor},
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
     MAX_DEPTH, SAMPLE_PER_PIXELS,
@@ -34,8 +35,12 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
     let mut world: World = Vec::new();
 
+    let odd_even_texture = Box::new(CheckerTexture::new(
+        Color::new(0.2, 0.3, 0.1),
+        Color::new(0.9, 0.9, 0.9),
+    ));
     let ground_material: Arc<dyn Material> = Arc::new(Lambertian {
-        albedo: Color::new(0.5, 0.5, 0.5),
+        albedo: odd_even_texture,
     });
 
     world.push(Box::new(Sphere::new(
@@ -62,7 +67,9 @@ pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
 
                 if choose_mat < 0.8 {
                     let albedo = Vec3::random_color() * Vec3::random_color();
-                    sphere_material = Arc::new(Lambertian { albedo });
+                    sphere_material = Arc::new(Lambertian {
+                        albedo: Box::new(SolidColor { color: albedo }),
+                    });
                     let centre2 = centre + Vec3::new(0.0, random_double(0.0, 0.5), 0.0);
                     world.push(Box::new(MovingSphere::new(
                         centre,
@@ -91,7 +98,7 @@ pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
     )));
 
     let big_lamb: Arc<dyn Material> = Arc::new(Lambertian {
-        albedo: Color::new(0.4, 0.2, 0.1),
+        albedo: Box::new(SolidColor::new(0.4, 0.2, 0.1)),
     });
     world.push(Box::new(Sphere::new(
         Point3::new(-4.0, 1.0, 0.0),

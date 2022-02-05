@@ -73,6 +73,8 @@ impl Hittable for MovingSphere {
             ray,
             outward_normal,
             Arc::clone(&self.material),
+            0.0,
+            0.0,
         ))
     }
 
