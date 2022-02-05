@@ -18,6 +18,8 @@ pub struct HitRecord {
     pub t: f64,
     pub material: Arc<dyn Material>,
     pub front_face: bool,
+    pub u: f64,
+    pub v: f64,
 }
 
 pub trait Hittable: Sync + Send {
@@ -32,6 +34,8 @@ impl HitRecord {
         ray: &Ray,
         outward_normal: Vec3,
         material: Arc<dyn Material>,
+        u: f64,
+        v: f64,
     ) -> HitRecord {
         let front_face = ray.direction.dot(outward_normal) <= 0.0;
         let normal = match front_face {
@@ -45,6 +49,8 @@ impl HitRecord {
             normal,
             material,
             front_face,
+            u,
+            v,
         }
     }
 }

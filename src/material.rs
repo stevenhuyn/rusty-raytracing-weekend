@@ -1,6 +1,7 @@
 use crate::{
     hittable::HitRecord,
     ray::Ray,
+    texture::Texture,
     utils::{random_double, random_in_unit_sphere, random_unit_vector},
     vec3::{Color, Vec3, VecOps},
 };
@@ -10,18 +11,19 @@ pub trait Material: Send + Sync {
 }
 
 pub struct Lambertian {
-    pub albedo: Color,
+    pub albedo: Box<dyn Texture>,
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Box<dyn Texture>, Ray)> {
         let mut scatter_direction = rec.normal + random_unit_vector();
 
+        // Catch degenerate scatter direction
         if scatter_direction.near_zero() {
             scatter_direction = rec.normal;
         }
 
-        let attenuation = self.albedo;
+        let attenuation = self.albedo.value(rec.u, rec.v, rec.p);
         let scattered = Ray::new(rec.point, scatter_direction, r_in.time);
 
         Some((attenuation, scattered))

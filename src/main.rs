@@ -10,6 +10,7 @@ mod hittable;
 mod material;
 mod ray;
 mod renderer;
+mod texture;
 mod utils;
 mod vec3;
 mod window;
