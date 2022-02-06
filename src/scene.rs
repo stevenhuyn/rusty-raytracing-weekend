@@ -1,3 +1,5 @@
+// Should this go under hittables?
+
 use std::sync::Arc;
 
 use crate::{

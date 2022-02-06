@@ -17,6 +17,7 @@ mod aabb;
 mod camera;
 mod hittable;
 mod material;
+mod perlin;
 mod ray;
 mod renderer;
 mod scene;
@@ -24,7 +25,6 @@ mod texture;
 mod utils;
 mod vec3;
 mod window;
-
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
