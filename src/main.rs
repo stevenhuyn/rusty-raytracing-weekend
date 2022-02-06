@@ -1,8 +1,17 @@
+// TODO: Work out best way to do imports?
+// What is `extern crate ...`
+// Why importa with crate::{...}?
+// What about super::{...}
+
+#![allow(dead_code)]
+
 use clap::Parser;
 use image::{save_buffer, ColorType};
-use renderer::draw_random_scene;
 use std::time::Instant;
 use window::render_window;
+
+use renderer::render;
+use scene::two_spheres;
 
 mod aabb;
 mod camera;
@@ -10,6 +19,7 @@ mod hittable;
 mod material;
 mod ray;
 mod renderer;
+mod scene;
 mod texture;
 mod utils;
 mod vec3;
@@ -51,7 +61,7 @@ fn main() {
     let filename = cli.filename.unwrap_or_else(|| "render.png".to_string());
 
     let now = Instant::now();
-    let buffer: Vec<u8> = draw_random_scene(width, height);
+    let buffer: Vec<u8> = render(width, height, &two_spheres());
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

@@ -54,7 +54,6 @@ impl Bvh {
         panic!("No bounding box in BvhNode constructor");
     }
 
-    // is &Box a code smell?
     fn box_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>, axis: usize) -> Ordering {
         let box_a = a.bounding_box(0.0, 0.0);
         let box_b = b.bounding_box(0.0, 0.0);
@@ -93,7 +92,7 @@ impl Hittable for Bvh {
 
                 right_hit.or(left_hit)
             }
-            Bvh::SingNode { only, bound } => only.hit(ray, t_min, t_max),
+            Bvh::SingNode { only, bound: _ } => only.hit(ray, t_min, t_max),
         }
     }
 

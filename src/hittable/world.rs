@@ -3,6 +3,8 @@ use crate::{aabb::Aabb, ray::Ray};
 
 pub type World = Vec<Box<dyn Hittable>>;
 
+// TODO: Rename World back to HittableList
+
 impl Hittable for World {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut closest_hit: Option<HitRecord> = None;

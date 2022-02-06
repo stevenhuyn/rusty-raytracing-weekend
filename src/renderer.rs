@@ -1,18 +1,13 @@
 use crate::{
     camera::Camera,
-    hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, Hittable},
-    material::{Dielectric, Lambertian, Material, Metal},
+    hittable::Hittable,
     ray::Ray,
-    texture::{CheckerTexture, SolidColor},
     utils::random_double,
-    vec3::{Color, Point3, Vec3, VecOps},
+    vec3::{Color, Point3, Vec3},
     MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
 use rayon::prelude::*;
-use std::{
-    ops::{Div, Mul},
-    sync::Arc,
-};
+use std::ops::{Div, Mul};
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     if depth == 0 {
@@ -32,92 +27,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
 
-pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
-    let mut world: World = Vec::new();
-
-    let odd_even_texture = Box::new(CheckerTexture::new(
-        Color::new(0.2, 0.3, 0.1),
-        Color::new(0.9, 0.9, 0.9),
-    ));
-    let ground_material: Arc<dyn Material> = Arc::new(Lambertian {
-        albedo: odd_even_texture,
-    });
-
-    world.push(Box::new(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0,
-        ground_material,
-    )));
-
-    let glass_material: Arc<dyn Material> = Arc::new(Dielectric { ir: 1.5 });
-
-    for a in -11..11 {
-        for b in -11..11 {
-            let a = a as f64;
-            let b = b as f64;
-            let choose_mat = random_double(0.0, 1.0);
-            let centre = Point3::new(
-                a + 0.9 * random_double(0.0, 1.0),
-                0.2,
-                b + 0.9 * random_double(0.0, 1.0),
-            );
-
-            if (centre - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                let sphere_material: Arc<dyn Material>;
-
-                if choose_mat < 0.8 {
-                    let albedo = Vec3::random_color() * Vec3::random_color();
-                    sphere_material = Arc::new(Lambertian {
-                        albedo: Box::new(SolidColor { color: albedo }),
-                    });
-                    let centre2 = centre + Vec3::new(0.0, random_double(0.0, 0.5), 0.0);
-                    world.push(Box::new(MovingSphere::new(
-                        centre,
-                        centre2,
-                        0.0,
-                        1.0,
-                        0.2,
-                        sphere_material.clone(),
-                    )));
-                } else if choose_mat < 0.95 {
-                    let albedo = Vec3::random_color();
-                    let fuzz = random_double(0.0, 0.5);
-                    sphere_material = Arc::new(Metal { albedo, fuzz });
-                    world.push(Box::new(Sphere::new(centre, 0.2, sphere_material.clone())));
-                } else {
-                    world.push(Box::new(Sphere::new(centre, 0.2, glass_material.clone())));
-                }
-            }
-        }
-    }
-
-    world.push(Box::new(Sphere::new(
-        Point3::new(0.0, 1.0, 0.0),
-        1.0,
-        glass_material,
-    )));
-
-    let big_lamb: Arc<dyn Material> = Arc::new(Lambertian {
-        albedo: Box::new(SolidColor::new(0.4, 0.2, 0.1)),
-    });
-    world.push(Box::new(Sphere::new(
-        Point3::new(-4.0, 1.0, 0.0),
-        1.0,
-        big_lamb,
-    )));
-
-    let big_metal = Arc::new(Metal {
-        albedo: Color::new(0.7, 0.6, 0.5),
-        fuzz: 0.0,
-    });
-    world.push(Box::new(Sphere::new(
-        Point3::new(4.0, 1.0, 0.0),
-        1.0,
-        big_metal,
-    )));
-
-    let bvh_world = Bvh::new(world, 0.0, 1.0);
-
+pub fn render(image_width: u32, image_height: u32, scene: &dyn Hittable) -> Vec<u8> {
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
@@ -147,7 +57,7 @@ pub fn draw_random_scene(image_width: u32, image_height: u32) -> Vec<u8> {
                     let u = (i as f64 + random_double(-1.0, 1.0)) / (image_width - 1) as f64;
                     let v = (j as f64 + random_double(-1.0, 1.0)) / (image_height - 1) as f64;
                     let ray = camera.get_ray(u, v);
-                    ray_color(&ray, &bvh_world, MAX_DEPTH)
+                    ray_color(&ray, scene, MAX_DEPTH)
                 })
                 .fold(Color::new(0.0, 0.0, 0.0), |acc, e| acc + e)
                 .div(SAMPLE_PER_PIXELS as f64)
