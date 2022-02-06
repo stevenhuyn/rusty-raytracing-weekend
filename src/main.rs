@@ -13,6 +13,8 @@ use window::render_window;
 use renderer::render;
 use scene::two_spheres;
 
+use crate::scene::two_perlin_spheres;
+
 mod aabb;
 mod camera;
 mod hittable;
@@ -61,7 +63,7 @@ fn main() {
     let filename = cli.filename.unwrap_or_else(|| "render.png".to_string());
 
     let now = Instant::now();
-    let buffer: Vec<u8> = render(width, height, &two_spheres());
+    let buffer: Vec<u8> = render(width, height, &two_perlin_spheres());
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

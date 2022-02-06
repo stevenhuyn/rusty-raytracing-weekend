@@ -5,7 +5,7 @@ use std::sync::Arc;
 use crate::{
     hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World},
     material::{Dielectric, Lambertian, Material, Metal},
-    texture::{CheckerTexture, SolidColor},
+    texture::{CheckerTexture, NoiseTexture, SolidColor},
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
 };
@@ -31,6 +31,29 @@ pub fn two_spheres() -> World {
         Point3::new(0.0, 10.0, 0.0),
         10.0,
         checker_material,
+    )));
+
+    objects
+}
+
+pub fn two_perlin_spheres() -> World {
+    let mut objects = World::new();
+
+    let perlin_texture = NoiseTexture::new_box();
+
+    let perlin_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: perlin_texture,
+    });
+
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        perlin_material.clone(),
+    )));
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, 2.0, 0.0),
+        2.0,
+        perlin_material,
     )));
 
     objects
