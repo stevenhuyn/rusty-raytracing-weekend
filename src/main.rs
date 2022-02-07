@@ -7,6 +7,7 @@
 
 use clap::Parser;
 use image::{save_buffer, ColorType};
+use itertools::Itertools;
 use std::time::Instant;
 use window::render_window;
 
