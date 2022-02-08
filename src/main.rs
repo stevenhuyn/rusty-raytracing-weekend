@@ -61,7 +61,11 @@ fn main() {
     let cli = Cli::parse();
     let width = cli.width.unwrap_or(DEFAULT_WIDTH);
     let height = cli.height.unwrap_or((width as f64 / ASPECT_RATIO) as u32);
-    let filename = cli.filename.unwrap_or_else(|| "render.png".to_string());
+    let mut filename = cli.filename.unwrap_or_else(|| "render.png".to_string());
+
+    if !filename.ends_with(".png") {
+        filename.push_str(".png");
+    }
 
     let now = Instant::now();
     let buffer: Vec<u8> = render(width, height, &two_perlin_spheres());
