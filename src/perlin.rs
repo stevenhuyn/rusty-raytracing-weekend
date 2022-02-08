@@ -44,12 +44,12 @@ impl Perlin {
         let mut c: [[[Vec3; 2]; 2]; 2] = [[[Vec3::default(); 2]; 2]; 2];
 
         for ((di, dj), dk) in (0..2).cartesian_product(0..2).cartesian_product(0..2) {
-            let float_index = (self.perm_x[((i + di as i64) & 255) as usize]
+            let vec_index = (self.perm_x[((i + di as i64) & 255) as usize]
                 ^ self.perm_y[((j + dj as i64) & 255) as usize]
                 ^ self.perm_z[((k + dk as i64) & 255) as usize])
                 as usize;
 
-            c[di][dj][dk] = self.ran_vec[float_index];
+            c[di][dj][dk] = self.ran_vec[vec_index];
         }
 
         Self::trilinear_interp(&c, u, v, w)
