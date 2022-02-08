@@ -86,12 +86,26 @@ impl Perlin {
             let j_f = j as f64;
             let k_f = k as f64;
             let weight_v = Vec3::new(u - i_f, v - j_f, w - k_f);
-            accum += (i_f * u + (1.0 - i_f) * (1.0 - u))
-                * (j_f * v + (1.0 - j_f) * (1.0 - v))
-                * (k_f * w + (1.0 - k_f) * (1.0 - w))
+            accum += (i_f * uu + (1.0 - i_f) * (1.0 - uu))
+                * (j_f * vv + (1.0 - j_f) * (1.0 - vv))
+                * (k_f * ww + (1.0 - k_f) * (1.0 - ww))
                 * c[i][j][k].dot(weight_v);
         }
 
         accum
+    }
+
+    pub fn turb(&self, p: Point3, depth: i64) -> f64 {
+        let mut accum = 0.0;
+        let mut temp_p = p;
+        let mut weight = 1.0;
+
+        for _ in 0..depth {
+            accum += weight * self.noise(temp_p);
+            weight *= 0.5;
+            temp_p *= 2.0;
+        }
+
+        accum.abs()
     }
 }
