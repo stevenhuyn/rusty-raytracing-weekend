@@ -1,0 +1,6 @@
+[alias]
+s = "run --profile dev-fast -- -s"
+ss = "run --profile dev-fast -- -s -w 800"
+
+[build]
+rustflags = ["-C", "link-arg=-fuse-ld=lld", "-C", "target-cpu=native"]
