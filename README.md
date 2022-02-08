@@ -2,7 +2,7 @@
 
 Following [_Ray Tracing in One Weekend_](https://raytracing.github.io/) to make a CPU raytracer but in Rust!
 
-<img src="./media/render_book1.png" alt="Final render of book 1" width=400/> <img src="./media/checkerMoving.png" alt="Checkered Ground with motion blur" width=400/>
+<img src="./media/render_book1.png" alt="Final render of book 1" width=400/><img src="./media/checkerMoving.png" alt="Checkered Ground with motion blur" width=400/><img src="./media/2.5.6 it's off.png" alt="Turbulence" width=400/><img src="./media/2.5.5 scary.png" alt="Scary glitch" width=400/>
 
 
 ## Progress:
