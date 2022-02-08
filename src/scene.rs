@@ -39,7 +39,7 @@ pub fn two_spheres() -> World {
 pub fn two_perlin_spheres() -> World {
     let mut objects = World::new();
 
-    let perlin_texture = NoiseTexture::new_box(20.0);
+    let perlin_texture = NoiseTexture::new_box(4.0);
 
     let perlin_material: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: perlin_texture,
