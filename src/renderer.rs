@@ -6,8 +6,14 @@ use crate::{
     vec3::{Color, Point3, Vec3},
     MAX_DEPTH, SAMPLE_PER_PIXELS,
 };
+
 use rayon::prelude::*;
 use std::ops::{Div, Mul};
+
+// TODO: Make this a paramater for scene? Scene struct?
+lazy_static! {
+    static ref BACKGROUND: Color = Color::new(0.7, 0.8, 1.0);
+}
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     if depth == 0 {
@@ -15,16 +21,18 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     }
 
     if let Some(hit_record) = world.hit(ray, 0.001, f64::INFINITY) {
+        let emitted = hit_record
+            .material
+            .emitted(hit_record.u, hit_record.v, hit_record.point);
+
         if let Some((attenuation, scattered)) = hit_record.material.scatter(ray, &hit_record) {
-            return attenuation * ray_color(&scattered, world, depth - 1);
+            return emitted * attenuation * ray_color(&scattered, world, depth - 1);
+        } else {
+            return emitted;
         }
-        return Color::new(0.0, 0.0, 0.0);
     }
 
-    let unit_direction = ray.direction.normalize();
-    let t = 0.5 * (unit_direction.y + 1f64);
-
-    (1f64 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+    *BACKGROUND
 }
 
 pub fn render(image_width: u32, image_height: u32, scene: &dyn Hittable) -> Vec<u8> {
