@@ -3,11 +3,15 @@ use crate::{
     ray::Ray,
     texture::Texture,
     utils::{random_double, random_in_unit_sphere, random_unit_vector},
-    vec3::{Color, Vec3, VecOps},
+    vec3::{Color, Point3, Vec3, VecOps},
 };
 
 pub trait Material: Send + Sync {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)>;
+
+    fn emitted(&self, u: f64, v: f64, p: Point3) -> Color {
+        Color::new(0.0, 0.0, 0.0)
+    }
 }
 
 pub struct Lambertian {
@@ -96,4 +100,24 @@ fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
     let r_out_perp = etai_over_etat * (uv + cos_theta * n);
     let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
     r_out_perp + r_out_parallel
+}
+
+struct DiffuseLight {
+    emit: Box<dyn Texture>,
+}
+
+impl Material for DiffuseLight {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
+        None
+    }
+
+    fn emitted(&self, u: f64, v: f64, p: Point3) -> Color {
+        self.emit.value(u, v, p)
+    }
+}
+
+impl DiffuseLight {
+    fn new(emit: Box<dyn Texture>) -> Self {
+        DiffuseLight { emit }
+    }
 }
