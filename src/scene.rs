@@ -2,10 +2,12 @@
 
 use std::sync::Arc;
 
+use image::{io::Reader, ColorType, GenericImageView};
+
 use crate::{
     hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World},
     material::{Dielectric, Lambertian, Material, Metal},
-    texture::{CheckerTexture, NoiseTexture, SolidColor},
+    texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
 };
@@ -54,6 +56,40 @@ pub fn two_perlin_spheres() -> World {
         Point3::new(0.0, 2.0, 0.0),
         2.0,
         perlin_material,
+    )));
+
+    objects
+}
+
+pub fn earth_scene() -> World {
+    let mut objects = World::new();
+
+    // TODO: Make helper function
+    // TODO: handle missing filename gracefully
+    let earth_image = Reader::open("./textures/earthmap.jpg")
+        .unwrap()
+        .decode()
+        .unwrap();
+
+    let image_width = earth_image.width();
+    let image_height = earth_image.height();
+    let image_data = earth_image.into_rgba8().to_vec();
+
+    let earth_texture = Box::new(ImageTexture::new(
+        image_data,
+        image_width as usize,
+        image_height as usize,
+        ColorType::Rgba8.bytes_per_pixel().into(),
+    ));
+
+    let earth_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: earth_texture,
+    });
+
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, 0.0, 0.0),
+        2.0,
+        earth_material.clone(),
     )));
 
     objects

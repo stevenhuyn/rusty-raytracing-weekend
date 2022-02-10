@@ -1,3 +1,5 @@
+use image::io::Reader;
+
 use crate::{
     perlin::Perlin,
     vec3::{Color, Point3},
@@ -68,5 +70,50 @@ impl Texture for NoiseTexture {
         Color::new(1.0, 1.0, 1.0)
             * 0.5
             * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
+    }
+}
+
+// TODO: Switch out and just use Image library?
+pub struct ImageTexture {
+    data: Vec<u8>,
+    width: usize,
+    height: usize,
+    bytes_per_pixel: usize,
+}
+
+impl Texture for ImageTexture {
+    fn value(&self, u: f64, v: f64, p: Point3) -> Color {
+        // Clamp input texture coordinates to [0,1] x [1,0]
+        let u = u.clamp(0.0, 1.0);
+        let v = 1.0 - v.clamp(0.0, 1.0); // Flip v to image coordinates
+
+        // Clamp integer mapping, since actual coordinates should be less than 1.0
+        let mut i = (u * self.width as f64) as usize;
+        let mut j = (v * self.height as f64) as usize;
+
+        if i >= self.width {
+            i = self.width - 1;
+        }
+
+        if j >= self.height {
+            j = self.height - 1;
+        }
+
+        let color_scale = 1.0 / 255.0;
+        let pixel_index = i * self.bytes_per_pixel + j * self.width * self.bytes_per_pixel;
+        let pixel = &self.data[pixel_index..pixel_index + self.bytes_per_pixel];
+
+        Color::new(pixel[0] as f64, pixel[1] as f64, pixel[2] as f64) * color_scale
+    }
+}
+
+impl ImageTexture {
+    pub fn new(data: Vec<u8>, width: usize, height: usize, bytes_per_pixel: usize) -> Self {
+        ImageTexture {
+            data,
+            width,
+            height,
+            bytes_per_pixel,
+        }
     }
 }

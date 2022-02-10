@@ -1,20 +1,13 @@
-// TODO: Work out best way to do imports?
-// What is `extern crate ...`
-// Why importa with crate::{...}?
-// What about super::{...}
-
 #![allow(dead_code)]
 
+// TODO: Work out best way to do imports?
+// Import with crate::{...}? separate?
 use clap::Parser;
 use image::{save_buffer, ColorType};
-use itertools::Itertools;
+use renderer::render;
+use scene::earth_scene;
 use std::time::Instant;
 use window::render_window;
-
-use renderer::render;
-use scene::two_spheres;
-
-use crate::scene::two_perlin_spheres;
 
 mod aabb;
 mod camera;
@@ -58,6 +51,12 @@ pub const MAX_DEPTH: u32 = 50;
 pub const SAMPLE_PER_PIXELS: u32 = 500;
 
 fn main() {
+    // let image = Reader::open(Path::new("./textures/earthmap.jpg"))
+    //     .unwrap()
+    //     .decode()
+    //     .unwrap();
+    // println!("{:?}", image.into_rgb8());;s
+
     let cli = Cli::parse();
     let width = cli.width.unwrap_or(DEFAULT_WIDTH);
     let height = cli.height.unwrap_or((width as f64 / ASPECT_RATIO) as u32);
@@ -68,7 +67,7 @@ fn main() {
     }
 
     let now = Instant::now();
-    let buffer: Vec<u8> = render(width, height, &two_perlin_spheres());
+    let buffer: Vec<u8> = render(width, height, &earth_scene());
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

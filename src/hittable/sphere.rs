@@ -32,7 +32,7 @@ impl Sphere {
         let theta = (-p.y).acos();
         let phi = (-p.z).atan2(p.x) + PI;
 
-        (phi / 2f64 * PI, theta / PI)
+        (phi / (2f64 * PI), theta / PI)
     }
 }
 
