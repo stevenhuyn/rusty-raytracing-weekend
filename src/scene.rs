@@ -5,8 +5,10 @@ use std::sync::Arc;
 use image::{io::Reader, ColorType, GenericImageView};
 
 use crate::{
-    hittable::{bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World},
-    material::{Dielectric, Lambertian, Material, Metal},
+    hittable::{
+        bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, xy_rect::XYRect,
+    },
+    material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
     utils::random_double,
     vec3::{Color, Point3, Vec3, VecOps},
@@ -90,6 +92,39 @@ pub fn earth_scene() -> World {
         Point3::new(0.0, 0.0, 0.0),
         2.0,
         earth_material.clone(),
+    )));
+
+    objects
+}
+
+pub fn light_scene() -> World {
+    let mut objects = World::new();
+
+    let perlin_texture = NoiseTexture::new_box(4.0);
+
+    let perlin_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: perlin_texture,
+    });
+
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        perlin_material.clone(),
+    )));
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, 2.0, 0.0),
+        2.0,
+        perlin_material,
+    )));
+
+    let diffuse_light = Arc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    objects.push(Box::new(XYRect::new(
+        3.0,
+        5.0,
+        1.0,
+        3.0,
+        -2.0,
+        diffuse_light,
     )));
 
     objects

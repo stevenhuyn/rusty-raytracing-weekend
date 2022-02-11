@@ -8,9 +8,10 @@ extern crate lazy_static;
 use clap::Parser;
 use image::{save_buffer, ColorType};
 use renderer::render;
-use scene::earth_scene;
 use std::time::Instant;
 use window::render_window;
+
+use crate::scene::light_scene;
 
 mod aabb;
 mod camera;
@@ -51,15 +52,9 @@ struct Cli {
 pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
 pub const DEFAULT_WIDTH: u32 = 400;
 pub const MAX_DEPTH: u32 = 50;
-pub const SAMPLE_PER_PIXELS: u32 = 500;
+pub const SAMPLE_PER_PIXELS: u32 = 400;
 
 fn main() {
-    // let image = Reader::open(Path::new("./textures/earthmap.jpg"))
-    //     .unwrap()
-    //     .decode()
-    //     .unwrap();
-    // println!("{:?}", image.into_rgb8());;s
-
     let cli = Cli::parse();
     let width = cli.width.unwrap_or(DEFAULT_WIDTH);
     let height = cli.height.unwrap_or((width as f64 / ASPECT_RATIO) as u32);
@@ -70,7 +65,7 @@ fn main() {
     }
 
     let now = Instant::now();
-    let buffer: Vec<u8> = render(width, height, &earth_scene());
+    let buffer: Vec<u8> = render(width, height, &light_scene());
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

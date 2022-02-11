@@ -10,7 +10,7 @@ use crate::{
 use super::{HitRecord, Hittable};
 
 /// Infinitely thin rectangle in the XY plane
-struct XYRect {
+pub struct XYRect {
     x0: f64,
     x1: f64,
     y0: f64,
@@ -57,5 +57,18 @@ impl Hittable for XYRect {
             Point3::new(self.x0, self.y0, self.k - 0.0001),
             Point3::new(self.x1, self.y1, self.k + 0.0001),
         ))
+    }
+}
+
+impl XYRect {
+    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, material: Arc<dyn Material>) -> Self {
+        XYRect {
+            x0,
+            x1,
+            y0,
+            y1,
+            k,
+            material,
+        }
     }
 }

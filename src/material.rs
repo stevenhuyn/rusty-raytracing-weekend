@@ -1,7 +1,7 @@
 use crate::{
     hittable::HitRecord,
     ray::Ray,
-    texture::Texture,
+    texture::{SolidColor, Texture},
     utils::{random_double, random_in_unit_sphere, random_unit_vector},
     vec3::{Color, Point3, Vec3, VecOps},
 };
@@ -102,7 +102,7 @@ fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
     r_out_perp + r_out_parallel
 }
 
-struct DiffuseLight {
+pub struct DiffuseLight {
     emit: Box<dyn Texture>,
 }
 
@@ -117,7 +117,9 @@ impl Material for DiffuseLight {
 }
 
 impl DiffuseLight {
-    fn new(emit: Box<dyn Texture>) -> Self {
-        DiffuseLight { emit }
+    pub fn new(emit: Color) -> Self {
+        DiffuseLight {
+            emit: Box::new(SolidColor { color: emit }),
+        }
     }
 }

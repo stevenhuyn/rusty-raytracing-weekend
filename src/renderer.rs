@@ -12,7 +12,7 @@ use std::ops::{Div, Mul};
 
 // TODO: Make this a paramater for scene? Scene struct?
 lazy_static! {
-    static ref BACKGROUND: Color = Color::new(0.7, 0.8, 1.0);
+    static ref BACKGROUND: Color = Color::new(0.0, 0.0, 0.0);
 }
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
@@ -26,7 +26,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
             .emitted(hit_record.u, hit_record.v, hit_record.point);
 
         if let Some((attenuation, scattered)) = hit_record.material.scatter(ray, &hit_record) {
-            return emitted * attenuation * ray_color(&scattered, world, depth - 1);
+            return emitted + attenuation * ray_color(&scattered, world, depth - 1);
         } else {
             return emitted;
         }
@@ -37,10 +37,10 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
 
 pub fn render(image_width: u32, image_height: u32, scene: &dyn Hittable) -> Vec<u8> {
     // Camera
-    let lookfrom = Point3::new(13.0, 2.0, 3.0);
-    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let lookfrom = Point3::new(26.0, 3.0, 6.0);
+    let lookat = Point3::new(0.0, 2.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
-    let dist_to_focus = 10.0;
+    let dist_to_focus = 50.0;
     let aperture = 0.1;
     let aspect_ratio = image_width as f64 / image_height as f64;
     let camera = Camera::new(
