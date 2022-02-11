@@ -127,10 +127,12 @@ pub fn light_scene() -> World {
         Arc::clone(&diffuse_light),
     )));
 
+    let red_light: Arc<dyn Material> = Arc::new(DiffuseLight::new(Color::new(4.0, 1.0, 0.0)));
+
     objects.push(Box::new(Sphere::new(
         Point3::new(0.0, 8.0, 0.0),
         2.0,
-        Arc::clone(&diffuse_light),
+        red_light,
     )));
 
     objects
