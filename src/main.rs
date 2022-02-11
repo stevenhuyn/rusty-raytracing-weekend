@@ -11,7 +11,7 @@ use renderer::render;
 use std::time::Instant;
 use window::render_window;
 
-use crate::scene::light_scene;
+use crate::scene::cornell_box;
 
 mod aabb;
 mod camera;
@@ -49,10 +49,10 @@ struct Cli {
     headless: bool,
 }
 
-pub const ASPECT_RATIO: f64 = 3.0 / 2.0;
-pub const DEFAULT_WIDTH: u32 = 400;
+pub const ASPECT_RATIO: f64 = 1.0;
+pub const DEFAULT_WIDTH: u32 = 600;
 pub const MAX_DEPTH: u32 = 50;
-pub const SAMPLE_PER_PIXELS: u32 = 400;
+pub const SAMPLE_PER_PIXELS: u32 = 200;
 
 fn main() {
     let cli = Cli::parse();
@@ -65,7 +65,8 @@ fn main() {
     }
 
     let now = Instant::now();
-    let buffer: Vec<u8> = render(width, height, &light_scene());
+    let (world, camera) = cornell_box(width, height);
+    let buffer: Vec<u8> = render(width, height, &world, camera);
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 
     if cli.save {

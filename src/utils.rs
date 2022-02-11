@@ -20,7 +20,6 @@ pub fn random_in_unit_sphere() -> Vec3 {
     }
 }
 
-#[allow(dead_code)]
 pub fn random_unit_vector() -> Vec3 {
     random_in_unit_sphere().normalize()
 }

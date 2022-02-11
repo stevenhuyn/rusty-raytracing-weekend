@@ -1,12 +1,14 @@
-// Should this go under hittables?
+// TODO: Trait??
 
 use std::sync::Arc;
 
 use image::{io::Reader, ColorType, GenericImageView};
 
 use crate::{
+    camera::Camera,
     hittable::{
         bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, xy_rect::XYRect,
+        xz_rect::XZRect, yz_rect::YZRect,
     },
     material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
@@ -14,7 +16,26 @@ use crate::{
     vec3::{Color, Point3, Vec3, VecOps},
 };
 
-pub fn two_spheres() -> World {
+pub fn two_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
+    // Camera
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        20.0,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
     let mut objects = World::new();
 
     let checker_texture = Box::new(CheckerTexture::new(
@@ -37,10 +58,29 @@ pub fn two_spheres() -> World {
         checker_material,
     )));
 
-    objects
+    (objects, camera)
 }
 
-pub fn two_perlin_spheres() -> World {
+pub fn two_perlin_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
+    // Camera
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        20.0,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
     let mut objects = World::new();
 
     let perlin_texture = NoiseTexture::new_box(4.0);
@@ -60,10 +100,29 @@ pub fn two_perlin_spheres() -> World {
         perlin_material,
     )));
 
-    objects
+    (objects, camera)
 }
 
-pub fn earth_scene() -> World {
+pub fn earth_scene(image_width: u32, image_height: u32) -> (World, Camera) {
+    // Camera
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        20.0,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
     let mut objects = World::new();
 
     // TODO: Make helper function
@@ -94,10 +153,30 @@ pub fn earth_scene() -> World {
         earth_material.clone(),
     )));
 
-    objects
+    (objects, camera)
 }
 
-pub fn light_scene() -> World {
+pub fn light_scene(image_width: u32, image_height: u32) -> (World, Camera) {
+    // Camera
+    let lookfrom = Point3::new(26.0, 3.0, 6.0);
+    let lookat = Point3::new(0.0, 2.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 50.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let vfov = 20.0;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
     let mut objects = World::new();
 
     let perlin_texture = NoiseTexture::new_box(4.0);
@@ -135,10 +214,120 @@ pub fn light_scene() -> World {
         red_light,
     )));
 
-    objects
+    (objects, camera)
 }
 
-pub fn random_scene() -> Bvh {
+pub fn cornell_box(image_width: u32, image_height: u32) -> (World, Camera) {
+    // Camera
+    let lookfrom = Point3::new(278.0, 278.0, -800.0);
+    let lookat = Point3::new(278.0, 278.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let vfov = 40.0;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
+    let mut objects = World::new();
+
+    let red_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.65, 0.05, 0.05)),
+    });
+    let white_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.73, 0.73, 0.73)),
+    });
+    let green_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.12, 0.45, 0.15)),
+    });
+    let light_material: Arc<dyn Material> =
+        Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
+
+    // Left & Right wall
+    objects.push(Box::new(YZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&green_material),
+    )));
+    objects.push(Box::new(YZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        Arc::clone(&red_material),
+    )));
+
+    // Light
+    objects.push(Box::new(XZRect::new(
+        213.0,
+        343.0,
+        227.0,
+        332.0,
+        554.0,
+        Arc::clone(&light_material),
+    )));
+
+    objects.push(Box::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        Arc::clone(&white_material),
+    )));
+    objects.push(Box::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&white_material),
+    )));
+    objects.push(Box::new(XYRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&white_material),
+    )));
+
+    (objects, camera)
+}
+
+pub fn random_scene(image_width: u32, image_height: u32) -> (Bvh, Camera) {
+    // Camera
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        20.0,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
     let mut world: World = Vec::new();
 
     let odd_even_texture = Box::new(CheckerTexture::new(
@@ -222,5 +411,5 @@ pub fn random_scene() -> Bvh {
         big_metal,
     )));
 
-    Bvh::new(world, 0.0, 1.0)
+    (Bvh::new(world, 0.0, 1.0), camera)
 }

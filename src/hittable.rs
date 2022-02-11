@@ -12,6 +12,8 @@ pub mod moving_sphere;
 pub mod sphere;
 pub mod world;
 pub mod xy_rect;
+pub mod xz_rect;
+pub mod yz_rect;
 
 pub struct HitRecord {
     pub point: Point3,

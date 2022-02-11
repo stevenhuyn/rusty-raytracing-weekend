@@ -35,26 +35,12 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     *BACKGROUND
 }
 
-pub fn render(image_width: u32, image_height: u32, scene: &dyn Hittable) -> Vec<u8> {
-    // Camera
-    let lookfrom = Point3::new(26.0, 3.0, 6.0);
-    let lookat = Point3::new(0.0, 2.0, 0.0);
-    let vup = Vec3::new(0.0, 1.0, 0.0);
-    let dist_to_focus = 50.0;
-    let aperture = 0.1;
-    let aspect_ratio = image_width as f64 / image_height as f64;
-    let camera = Camera::new(
-        lookfrom,
-        lookat,
-        vup,
-        20.0,
-        aspect_ratio,
-        aperture,
-        dist_to_focus,
-        0.0,
-        1.0,
-    );
-
+pub fn render(
+    image_width: u32,
+    image_height: u32,
+    scene: &dyn Hittable,
+    camera: Camera,
+) -> Vec<u8> {
     (0..image_height)
         .into_par_iter()
         .rev()
