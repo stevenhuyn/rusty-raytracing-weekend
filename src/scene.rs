@@ -117,14 +117,20 @@ pub fn light_scene() -> World {
         perlin_material,
     )));
 
-    let diffuse_light = Arc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    let diffuse_light: Arc<dyn Material> = Arc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
     objects.push(Box::new(XYRect::new(
         3.0,
         5.0,
         1.0,
         3.0,
         -2.0,
-        diffuse_light,
+        Arc::clone(&diffuse_light),
+    )));
+
+    objects.push(Box::new(Sphere::new(
+        Point3::new(0.0, 8.0, 0.0),
+        2.0,
+        Arc::clone(&diffuse_light),
     )));
 
     objects
