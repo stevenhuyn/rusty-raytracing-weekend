@@ -35,7 +35,7 @@ impl Bvh {
             return Bvh::SingNode { only, bound };
         }
 
-        objects.sort_by(comparator);
+        objects.sort_by(|a, b| comparator(a.as_ref(), b.as_ref()));
         let mid_index = objects.len() / 2;
         let left_half = objects.drain(0..mid_index).collect();
         let right_half = objects;
@@ -54,7 +54,7 @@ impl Bvh {
         panic!("No bounding box in BvhNode constructor");
     }
 
-    fn box_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>, axis: usize) -> Ordering {
+    fn box_compare(a: &dyn Hittable, b: &dyn Hittable, axis: usize) -> Ordering {
         let box_a = a.bounding_box(0.0, 0.0);
         let box_b = b.bounding_box(0.0, 0.0);
 
@@ -65,15 +65,15 @@ impl Bvh {
         panic!("No bounding box in BvhNode constructor")
     }
 
-    fn bool_x_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>) -> Ordering {
+    fn bool_x_compare(a: &dyn Hittable, b: &dyn Hittable) -> Ordering {
         Self::box_compare(a, b, 0)
     }
 
-    fn bool_y_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>) -> Ordering {
+    fn bool_y_compare(a: &dyn Hittable, b: &dyn Hittable) -> Ordering {
         Self::box_compare(a, b, 1)
     }
 
-    fn bool_z_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>) -> Ordering {
+    fn bool_z_compare(a: &dyn Hittable, b: &dyn Hittable) -> Ordering {
         Self::box_compare(a, b, 2)
     }
 }

@@ -9,7 +9,7 @@ use crate::{
 pub trait Material: Send + Sync {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)>;
 
-    fn emitted(&self, u: f64, v: f64, p: Point3) -> Color {
+    fn emitted(&self, _u: f64, _v: f64, _p: Point3) -> Color {
         Color::new(0.0, 0.0, 0.0)
     }
 }
@@ -107,7 +107,7 @@ struct DiffuseLight {
 }
 
 impl Material for DiffuseLight {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
+    fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> Option<(Color, Ray)> {
         None
     }
 

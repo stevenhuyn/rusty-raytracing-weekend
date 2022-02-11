@@ -1,5 +1,3 @@
-use image::io::Reader;
-
 use crate::{
     perlin::Perlin,
     vec3::{Color, Point3},
@@ -82,7 +80,7 @@ pub struct ImageTexture {
 }
 
 impl Texture for ImageTexture {
-    fn value(&self, u: f64, v: f64, p: Point3) -> Color {
+    fn value(&self, u: f64, v: f64, _p: Point3) -> Color {
         // Clamp input texture coordinates to [0,1] x [1,0]
         let u = u.clamp(0.0, 1.0);
         let v = 1.0 - v.clamp(0.0, 1.0); // Flip v to image coordinates

@@ -52,7 +52,7 @@ impl Hittable for XYRect {
             v,
         ))
     }
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _time0: f64, _time1: f64) -> Option<Aabb> {
         Some(Aabb::new(
             Point3::new(self.x0, self.y0, self.k - 0.0001),
             Point3::new(self.x1, self.y1, self.k + 0.0001),
