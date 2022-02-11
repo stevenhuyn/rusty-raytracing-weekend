@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use crate::{aabb::Aabb, ray::Ray, utils::random_double};
 
-use super::{world::World, Hittable};
+use super::{hittable_list::HittableList, Hittable};
 
 pub enum Bvh {
     TwinNode {
@@ -17,7 +17,7 @@ pub enum Bvh {
 }
 
 impl Bvh {
-    pub fn new(mut objects: World, time0: f64, time1: f64) -> Self {
+    pub fn new(mut objects: HittableList, time0: f64, time1: f64) -> Self {
         // Why random here I wonder?
         let axis = random_double(0.0, 3.0).floor() as usize;
 

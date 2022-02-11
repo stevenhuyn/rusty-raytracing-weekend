@@ -1,11 +1,11 @@
 use super::{HitRecord, Hittable};
 use crate::{aabb::Aabb, ray::Ray};
 
-pub type World = Vec<Box<dyn Hittable>>;
+pub type HittableList = Vec<Box<dyn Hittable>>;
 
-// TODO: Rename World back to HittableList
+// TODO: Rename HittableList back to HittableList
 
-impl Hittable for World {
+impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut closest_hit: Option<HitRecord> = None;
         let mut closest_so_far = t_max;

@@ -7,8 +7,8 @@ use image::{io::Reader, ColorType, GenericImageView};
 use crate::{
     camera::Camera,
     hittable::{
-        bvh::Bvh, moving_sphere::MovingSphere, sphere::Sphere, world::World, xy_rect::XYRect,
-        xz_rect::XZRect, yz_rect::YZRect,
+        bvh::Bvh, hittable_list::HittableList, moving_sphere::MovingSphere, sphere::Sphere,
+        xy_rect::XYRect, xz_rect::XZRect, yz_rect::YZRect,
     },
     material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
@@ -16,7 +16,7 @@ use crate::{
     vec3::{Color, Point3, Vec3, VecOps},
 };
 
-pub fn two_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
+pub fn two_spheres(image_width: u32, image_height: u32) -> (HittableList, Camera) {
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
@@ -36,7 +36,7 @@ pub fn two_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
         1.0,
     );
 
-    let mut objects = World::new();
+    let mut objects = HittableList::new();
 
     let checker_texture = Box::new(CheckerTexture::new(
         Color::new(0.2, 0.3, 0.1),
@@ -61,7 +61,7 @@ pub fn two_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
     (objects, camera)
 }
 
-pub fn two_perlin_spheres(image_width: u32, image_height: u32) -> (World, Camera) {
+pub fn two_perlin_spheres(image_width: u32, image_height: u32) -> (HittableList, Camera) {
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
@@ -81,7 +81,7 @@ pub fn two_perlin_spheres(image_width: u32, image_height: u32) -> (World, Camera
         1.0,
     );
 
-    let mut objects = World::new();
+    let mut objects = HittableList::new();
 
     let perlin_texture = NoiseTexture::new_box(4.0);
 
@@ -103,7 +103,7 @@ pub fn two_perlin_spheres(image_width: u32, image_height: u32) -> (World, Camera
     (objects, camera)
 }
 
-pub fn earth_scene(image_width: u32, image_height: u32) -> (World, Camera) {
+pub fn earth_scene(image_width: u32, image_height: u32) -> (HittableList, Camera) {
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
@@ -123,7 +123,7 @@ pub fn earth_scene(image_width: u32, image_height: u32) -> (World, Camera) {
         1.0,
     );
 
-    let mut objects = World::new();
+    let mut objects = HittableList::new();
 
     // TODO: Make helper function
     // TODO: handle missing filename gracefully
@@ -156,7 +156,7 @@ pub fn earth_scene(image_width: u32, image_height: u32) -> (World, Camera) {
     (objects, camera)
 }
 
-pub fn light_scene(image_width: u32, image_height: u32) -> (World, Camera) {
+pub fn light_scene(image_width: u32, image_height: u32) -> (HittableList, Camera) {
     // Camera
     let lookfrom = Point3::new(26.0, 3.0, 6.0);
     let lookat = Point3::new(0.0, 2.0, 0.0);
@@ -177,7 +177,7 @@ pub fn light_scene(image_width: u32, image_height: u32) -> (World, Camera) {
         1.0,
     );
 
-    let mut objects = World::new();
+    let mut objects = HittableList::new();
 
     let perlin_texture = NoiseTexture::new_box(4.0);
 
@@ -217,7 +217,7 @@ pub fn light_scene(image_width: u32, image_height: u32) -> (World, Camera) {
     (objects, camera)
 }
 
-pub fn cornell_box(image_width: u32, image_height: u32) -> (World, Camera) {
+pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera) {
     // Camera
     let lookfrom = Point3::new(278.0, 278.0, -800.0);
     let lookat = Point3::new(278.0, 278.0, 0.0);
@@ -238,7 +238,7 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (World, Camera) {
         1.0,
     );
 
-    let mut objects = World::new();
+    let mut objects = HittableList::new();
 
     let red_material: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Box::new(SolidColor::new(0.65, 0.05, 0.05)),
@@ -328,7 +328,7 @@ pub fn random_scene(image_width: u32, image_height: u32) -> (Bvh, Camera) {
         1.0,
     );
 
-    let mut world: World = Vec::new();
+    let mut world: HittableList = Vec::new();
 
     let odd_even_texture = Box::new(CheckerTexture::new(
         Color::new(0.2, 0.3, 0.1),

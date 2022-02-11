@@ -8,9 +8,9 @@ use crate::{
 };
 
 pub mod bvh;
+pub mod hittable_list;
 pub mod moving_sphere;
 pub mod sphere;
-pub mod world;
 pub mod xy_rect;
 pub mod xz_rect;
 pub mod yz_rect;
