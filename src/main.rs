@@ -1,5 +1,8 @@
 #![allow(dead_code)]
 
+#[macro_use]
+extern crate lazy_static;
+
 // TODO: Work out best way to do imports?
 // Import with crate::{...}? separate?
 use clap::Parser;

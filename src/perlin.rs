@@ -1,10 +1,8 @@
-use std::mem;
-
 use itertools::Itertools;
 use rand::{prelude::SliceRandom, thread_rng};
 
 use crate::{
-    utils::{random_double, random_unit_vector},
+    utils::random_unit_vector,
     vec3::{Point3, Vec3},
 };
 

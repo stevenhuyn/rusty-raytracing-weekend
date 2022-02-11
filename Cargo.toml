@@ -23,3 +23,4 @@ itertools = "0.10.3"
 rayon = "1.5.1"
 image = "0.23.14"
 clap = { version = "3.0.10", features = ["derive"] }
+lazy_static = "1.4.0"
