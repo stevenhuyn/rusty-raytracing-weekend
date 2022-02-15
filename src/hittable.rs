@@ -7,6 +7,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
+pub mod box_rect;
 pub mod bvh;
 pub mod hittable_list;
 pub mod moving_sphere;

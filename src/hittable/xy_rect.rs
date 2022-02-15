@@ -9,6 +9,7 @@ use crate::{
 
 use super::{HitRecord, Hittable};
 
+// TODO: Refactor into 1?
 /// Infinitely thin rectangle in the XY plane
 pub struct XYRect {
     x0: f64,

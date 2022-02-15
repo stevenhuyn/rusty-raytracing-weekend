@@ -1,10 +1,6 @@
 use crate::{
-    camera::Camera,
-    hittable::Hittable,
-    ray::Ray,
-    utils::random_double,
-    vec3::{Color, Point3, Vec3},
-    MAX_DEPTH, SAMPLE_PER_PIXELS,
+    camera::Camera, hittable::Hittable, ray::Ray, utils::random_double, vec3::Color, MAX_DEPTH,
+    SAMPLE_PER_PIXELS,
 };
 
 use rayon::prelude::*;

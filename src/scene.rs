@@ -7,8 +7,8 @@ use image::{io::Reader, ColorType, GenericImageView};
 use crate::{
     camera::Camera,
     hittable::{
-        bvh::Bvh, hittable_list::HittableList, moving_sphere::MovingSphere, sphere::Sphere,
-        xy_rect::XYRect, xz_rect::XZRect, yz_rect::YZRect,
+        box_rect::BoxRect, bvh::Bvh, hittable_list::HittableList, moving_sphere::MovingSphere,
+        sphere::Sphere, xy_rect::XYRect, xz_rect::XZRect, yz_rect::YZRect,
     },
     material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
@@ -223,7 +223,7 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera
     let lookat = Point3::new(278.0, 278.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
-    let aperture = 0.1;
+    let aperture = 0.0;
     let aspect_ratio = image_width as f64 / image_height as f64;
     let vfov = 40.0;
     let camera = Camera::new(
@@ -305,6 +305,18 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera
         Arc::clone(&white_material),
     )));
 
+    objects.push(Box::new(BoxRect::new(
+        Point3::new(130.0, 0.0, 65.0),
+        Point3::new(295.0, 165.0, 230.0),
+        Arc::clone(&white_material),
+    )));
+
+    objects.push(Box::new(BoxRect::new(
+        Point3::new(265.0, 0.0, 295.0),
+        Point3::new(430.0, 330.0, 460.0),
+        Arc::clone(&white_material),
+    )));
+
     (objects, camera)
 }
 
@@ -313,6 +325,7 @@ pub fn random_scene(image_width: u32, image_height: u32) -> (Bvh, Camera) {
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
+    let vfov = 40.0;
     let dist_to_focus = 10.0;
     let aperture = 0.1;
     let aspect_ratio = image_width as f64 / image_height as f64;
@@ -320,7 +333,7 @@ pub fn random_scene(image_width: u32, image_height: u32) -> (Bvh, Camera) {
         lookfrom,
         lookat,
         vup,
-        20.0,
+        vfov,
         aspect_ratio,
         aperture,
         dist_to_focus,
