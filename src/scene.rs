@@ -306,6 +306,7 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera
         Arc::clone(&white_material),
     )));
 
+    // Triple box sus
     let mut box1: Box<dyn Hittable> = Box::new(BoxRect::new(
         Point3::new(0.0, 0.0, 0.0),
         Point3::new(165.0, 330.0, 165.0),
