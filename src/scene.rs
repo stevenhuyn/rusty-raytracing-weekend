@@ -8,7 +8,8 @@ use crate::{
     camera::Camera,
     hittable::{
         box_rect::BoxRect, bvh::Bvh, hittable_list::HittableList, moving_sphere::MovingSphere,
-        sphere::Sphere, xy_rect::XYRect, xz_rect::XZRect, yz_rect::YZRect,
+        rotate_y::RotateY, sphere::Sphere, translate::Translate, xy_rect::XYRect, xz_rect::XZRect,
+        yz_rect::YZRect, Hittable,
     },
     material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
@@ -305,17 +306,23 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera
         Arc::clone(&white_material),
     )));
 
-    objects.push(Box::new(BoxRect::new(
-        Point3::new(130.0, 0.0, 65.0),
-        Point3::new(295.0, 165.0, 230.0),
+    let mut box1: Box<dyn Hittable> = Box::new(BoxRect::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 330.0, 165.0),
         Arc::clone(&white_material),
-    )));
+    ));
+    box1 = Box::new(RotateY::new(box1, 15.0));
+    box1 = Box::new(Translate::new(box1, Vec3::new(265.0, 0.0, 295.0)));
+    objects.push(box1);
 
-    objects.push(Box::new(BoxRect::new(
-        Point3::new(265.0, 0.0, 295.0),
-        Point3::new(430.0, 330.0, 460.0),
+    let mut box2: Box<dyn Hittable> = Box::new(BoxRect::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 165.0, 165.0),
         Arc::clone(&white_material),
-    )));
+    ));
+    box2 = Box::new(RotateY::new(box2, -18.));
+    box2 = Box::new(Translate::new(box2, Vec3::new(130.0, 0.0, 65.0)));
+    objects.push(box2);
 
     (objects, camera)
 }

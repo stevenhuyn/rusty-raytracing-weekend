@@ -11,6 +11,7 @@ pub mod box_rect;
 pub mod bvh;
 pub mod hittable_list;
 pub mod moving_sphere;
+pub mod rotate_y;
 pub mod sphere;
 pub mod translate;
 pub mod xy_rect;

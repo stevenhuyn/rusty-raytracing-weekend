@@ -34,3 +34,9 @@ impl Hittable for Translate {
         None
     }
 }
+
+impl Translate {
+    pub fn new(obj: Box<dyn Hittable>, offset: Vec3) -> Self {
+        Translate { obj, offset }
+    }
+}
