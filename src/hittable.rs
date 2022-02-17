@@ -17,6 +17,7 @@ pub mod translate;
 pub mod xy_rect;
 pub mod xz_rect;
 pub mod yz_rect;
+pub mod constant_medium;
 
 pub struct HitRecord {
     pub point: Point3,
