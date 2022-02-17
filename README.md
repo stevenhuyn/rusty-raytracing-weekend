@@ -2,8 +2,6 @@
 
 Following [_Ray Tracing in One Weekend_](https://raytracing.github.io/) to make a CPU raytracer but in Rust!
 
-<img src="./media/render_book1.png" alt="Final render of book 1" width=800/>
-
 <img src="./media/render_book2.png" alt="Final render of book 2" width=800/>
 
 
