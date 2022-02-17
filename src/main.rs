@@ -52,7 +52,7 @@ struct Cli {
 pub const ASPECT_RATIO: f64 = 1.0;
 pub const DEFAULT_WIDTH: u32 = 600;
 pub const MAX_DEPTH: u32 = 50;
-pub const SAMPLE_PER_PIXELS: u32 = 30;
+pub const SAMPLE_PER_PIXELS: u32 = 10000;
 
 fn main() {
     let cli = Cli::parse();
