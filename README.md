@@ -2,12 +2,14 @@
 
 Following [_Ray Tracing in One Weekend_](https://raytracing.github.io/) to make a CPU raytracer but in Rust!
 
-<img src="./media/render_book1.png" alt="Final render of book 1" width=400/><img src="./media/checkerMoving.png" alt="Checkered Ground with motion blur" width=400/><img src="./media/2.5.6 it's off.png" alt="Turbulence" width=400/><img src="./media/2.6.2.earth.png" alt="Earth" width=400/><img src="./media/2.7.4.sunlight.png" alt="Light Scene with perlin noise" width=400/>
+<img src="./media/render_book1.png" alt="Final render of book 1" width=800/>
+
+<img src="./media/render_book2.png" alt="Final render of book 2" width=800/>
 
 
 ## Progress:
 1. Completed: [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) - [Completed Code Here](https://github.com/stevenhuyn/rusty-raytracing-weekend/tree/7b10c8097581be7427d7b18647b07b8a451772f5)
-2. Doing: [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
+2. Completed: [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
 3. Not Started: [_Ray Tracing: The Rest of Your Life_](https://raytracing.github.io/books/RayTracingTheRestOfYourLife.html)
 4. Not Started: Web port with wasm using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) and [wasm-bindgen-rayon](https://github.com/GoogleChromeLabs/wasm-bindgen-rayon) (?)
 
