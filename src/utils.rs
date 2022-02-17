@@ -2,6 +2,14 @@ use rand::random;
 
 use crate::vec3::Vec3;
 
+pub fn random_vec(lower: f64, upper: f64) -> Vec3 {
+    Vec3::new(
+        random_double(lower, upper),
+        random_double(lower, upper),
+        random_double(lower, upper),
+    )
+}
+
 pub fn random_double(lower: f64, upper: f64) -> f64 {
     random::<f64>() * (upper - lower) + lower
 }

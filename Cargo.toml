@@ -5,13 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-# [profile.release]
-# lto = "fat"
-# codegen-units = 1
-# panic = "abort"
-
-# [profile.dev-fast]
-# inherits = "release"
+[profile.release]
+lto = 'fat'
+codegen-units = 1
+panic = 'abort'
 
 [dependencies]
 glam = "0.20.2"
