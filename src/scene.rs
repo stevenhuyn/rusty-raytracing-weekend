@@ -522,7 +522,7 @@ pub fn final_scene(image_width: u32, image_height: u32) -> (HittableList, Camera
     )));
 
     objects.push(Box::new(Sphere::new(
-        Point3::new(260.0, 150.0, 45.0),
+        Point3::new(0.0, 150.0, 145.0),
         50.0,
         Arc::new(Metal {
             albedo: Color::new(0.8, 0.8, 0.9),
@@ -547,7 +547,7 @@ pub fn final_scene(image_width: u32, image_height: u32) -> (HittableList, Camera
 
     // Super cool fog effect
     let boundary = Box::new(Sphere::new(
-        Point3::new(370.0, 150.0, 145.0),
+        Point3::new(0.0, 0.0, 0.0),
         5000.0,
         Arc::new(Dielectric { ir: 1.5 }),
     ));
