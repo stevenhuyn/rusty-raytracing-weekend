@@ -9,6 +9,7 @@ use crate::{
 
 pub mod box_rect;
 pub mod bvh;
+pub mod constant_medium;
 pub mod hittable_list;
 pub mod moving_sphere;
 pub mod rotate_y;
@@ -17,7 +18,6 @@ pub mod translate;
 pub mod xy_rect;
 pub mod xz_rect;
 pub mod yz_rect;
-pub mod constant_medium;
 
 pub struct HitRecord {
     pub point: Point3,
@@ -38,7 +38,7 @@ impl HitRecord {
     pub fn new(
         point: Point3,
         t: f64,
-        ray: &Ray,
+        ray: &Ray, // Incoming ray
         outward_normal: Vec3,
         material: Arc<dyn Material>,
         u: f64,
