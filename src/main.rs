@@ -11,7 +11,7 @@ use renderer::render;
 use std::time::Instant;
 use window::render_window;
 
-use crate::scene::cornell_box;
+use crate::scene::smoke_cornell_box;
 
 mod aabb;
 mod camera;
@@ -65,7 +65,7 @@ fn main() {
     }
 
     let now = Instant::now();
-    let (world, camera) = cornell_box(width, height);
+    let (world, camera) = smoke_cornell_box(width, height);
     let buffer: Vec<u8> = render(width, height, &world, camera);
     println!("Rendered in {}", now.elapsed().as_secs_f64());
 

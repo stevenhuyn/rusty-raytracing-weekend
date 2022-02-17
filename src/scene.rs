@@ -7,9 +7,9 @@ use image::{io::Reader, ColorType, GenericImageView};
 use crate::{
     camera::Camera,
     hittable::{
-        box_rect::BoxRect, bvh::Bvh, hittable_list::HittableList, moving_sphere::MovingSphere,
-        rotate_y::RotateY, sphere::Sphere, translate::Translate, xy_rect::XYRect, xz_rect::XZRect,
-        yz_rect::YZRect, Hittable,
+        box_rect::BoxRect, bvh::Bvh, constant_medium::ConstantMedium, hittable_list::HittableList,
+        moving_sphere::MovingSphere, rotate_y::RotateY, sphere::Sphere, translate::Translate,
+        xy_rect::XYRect, xz_rect::XZRect, yz_rect::YZRect, Hittable,
     },
     material::{Dielectric, DiffuseLight, Lambertian, Material, Metal},
     texture::{CheckerTexture, ImageTexture, NoiseTexture, SolidColor},
@@ -323,6 +323,117 @@ pub fn cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera
     ));
     box2 = Box::new(RotateY::new(box2, -18.));
     box2 = Box::new(Translate::new(box2, Vec3::new(130.0, 0.0, 65.0)));
+    objects.push(box2);
+
+    (objects, camera)
+}
+
+pub fn smoke_cornell_box(image_width: u32, image_height: u32) -> (HittableList, Camera) {
+    // Camera
+    let lookfrom = Point3::new(278.0, 278.0, -800.0);
+    let lookat = Point3::new(278.0, 278.0, 0.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.0;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let vfov = 40.0;
+    let camera = Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+        0.0,
+        1.0,
+    );
+
+    let mut objects = HittableList::new();
+
+    let red_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.65, 0.05, 0.05)),
+    });
+    let white_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.73, 0.73, 0.73)),
+    });
+    let green_material: Arc<dyn Material> = Arc::new(Lambertian {
+        albedo: Box::new(SolidColor::new(0.12, 0.45, 0.15)),
+    });
+    let light_material: Arc<dyn Material> = Arc::new(DiffuseLight::new(Color::new(7.0, 7.0, 7.0)));
+
+    // Left & Right wall
+    objects.push(Box::new(YZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&green_material),
+    )));
+    objects.push(Box::new(YZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        Arc::clone(&red_material),
+    )));
+
+    // Light
+    objects.push(Box::new(XZRect::new(
+        113.0,
+        443.0,
+        127.0,
+        432.0,
+        554.0,
+        Arc::clone(&light_material),
+    )));
+
+    objects.push(Box::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        Arc::clone(&white_material),
+    )));
+    objects.push(Box::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&white_material),
+    )));
+    objects.push(Box::new(XYRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        Arc::clone(&white_material),
+    )));
+
+    // Triple Box::new() sus
+    let mut box1: Box<dyn Hittable> = Box::new(BoxRect::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 330.0, 165.0),
+        Arc::clone(&white_material),
+    ));
+    box1 = Box::new(RotateY::new(box1, 15.0));
+    box1 = Box::new(Translate::new(box1, Vec3::new(265.0, 0.0, 295.0)));
+    box1 = Box::new(ConstantMedium::new(box1, 0.01, Color::new(0.0, 0.0, 0.0)));
+    objects.push(box1);
+
+    let mut box2: Box<dyn Hittable> = Box::new(BoxRect::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 165.0, 165.0),
+        Arc::clone(&white_material),
+    ));
+    box2 = Box::new(RotateY::new(box2, -18.));
+    box2 = Box::new(Translate::new(box2, Vec3::new(130.0, 0.0, 65.0)));
+    box2 = Box::new(ConstantMedium::new(box2, 0.01, Color::new(1.0, 1.0, 1.0)));
     objects.push(box2);
 
     (objects, camera)

@@ -13,7 +13,7 @@ use super::{HitRecord, Hittable};
 pub struct ConstantMedium {
     boundary: Box<dyn Hittable>,
     phase_function: Arc<dyn Material>,
-    neg_inv_density: f64,
+    density: f64,
 }
 
 impl Hittable for ConstantMedium {
@@ -40,13 +40,13 @@ impl Hittable for ConstantMedium {
 
         let ray_length = ray.direction.length();
         let distance_inside_boundary = (rec2.t - rec1.t) * ray_length;
-        let hit_distance = self.neg_inv_density * random_double(0.0, 1.0).ln();
+        let hit_distance = -(1.0 / self.density) * random_double(0.0, 1.0).ln();
 
         if hit_distance > distance_inside_boundary {
             return None;
         }
 
-        let t = rec1.t + hit_distance / ray_length;
+        let t = rec1.t + (hit_distance / ray_length);
         Some(HitRecord::new(
             ray.at(t),
             t,
@@ -67,7 +67,7 @@ impl ConstantMedium {
         ConstantMedium {
             boundary: b,
             phase_function: Arc::new(Isotropic::new(albedo)),
-            neg_inv_density: d,
+            density: d,
         }
     }
 }
