@@ -2,8 +2,7 @@
 
 use std::sync::Arc;
 
-use glam::Mat2;
-use image::{io::Reader, ColorType, GenericImageView};
+use image::{io::Reader, ColorType};
 
 use crate::{
     camera::Camera,

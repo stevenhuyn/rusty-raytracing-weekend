@@ -27,7 +27,7 @@ pub fn render_window(width: u32, height: u32, buffer: &[u8]) -> Result<(), Box<d
     };
 
     let now = Instant::now();
-    pixels.get_frame().copy_from_slice(buffer);
+    pixels.frame_mut().copy_from_slice(buffer);
     println!("Copied frame buffer in {}", now.elapsed().as_secs_f64());
 
     event_loop.run(move |event, _, control_flow| {
@@ -42,7 +42,7 @@ pub fn render_window(width: u32, height: u32, buffer: &[u8]) -> Result<(), Box<d
         // Handle input events
         if input.update(&event) {
             // Close events
-            if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
+                if input.key_pressed(VirtualKeyCode::Escape) || input.close_requested() {
                 *control_flow = ControlFlow::Exit;
                 return;
             }

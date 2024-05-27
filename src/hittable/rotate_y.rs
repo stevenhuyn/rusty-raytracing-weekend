@@ -1,5 +1,3 @@
-use std::borrow::Borrow;
-
 use crate::{
     aabb::Aabb,
     ray::Ray,
@@ -54,7 +52,7 @@ impl Hittable for RotateY {
         None
     }
 
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _time0: f64, _time1: f64) -> Option<Aabb> {
         self.bbox
     }
 }
